@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CréditoML — Roboadvisor Crediticio</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0f1e;
+    --surface: #111827;
+    --surface2: #1a2236;
+    --border: #1e2d45;
+    --accent: #2563eb;
+    --accent2: #3b82f6;
+    --green: #10b981;
+    --red: #ef4444;
+    --amber: #f59e0b;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --subtle: #334155;
+    --mono: 'DM Mono', monospace;
+    --serif: 'DM Serif Display', serif;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.3;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* Header */
+  header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 56px;
+    gap: 16px;
+  }
+
+  .logo-block h1 {
+    font-family: var(--serif);
+    font-size: 36px;
+    font-weight: 400;
+    letter-spacing: -0.5px;
+    line-height: 1;
+    color: #fff;
+  }
+
+  .logo-block h1 span { color: var(--accent2); font-style: italic; }
+
+  .logo-block p {
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--muted);
+    font-family: var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .badge-uc {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: var(--mono);
+    white-space: nowrap;
+    margin-top: 4px;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 2px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 32px;
+    width: fit-content;
+  }
+
+  .tab-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 20px;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: all .2s;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .tab-btn.active {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .tab-btn:not(.active):hover {
+    background: var(--surface2);
+    color: var(--text);
+  }
+
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+  /* Panels */
+  .panel { display: none; }
+  .panel.active { display: block; animation: fadeIn .3s ease; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+
+  .card-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Train section */
+  .train-info {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .info-chip {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+  }
+
+  .info-chip .label {
+    font-size: 10px;
+    font-family: var(--mono);
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+
+  .info-chip .val {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .info-chip .val.accent { color: var(--accent2); }
+
+  /* Button */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all .2s;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .btn-primary:hover { background: var(--accent2); transform: translateY(-1px); }
+  .btn-primary:active { transform: none; }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  /* Loader */
+  .loader {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Metrics grid */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .metric-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 18px;
+  }
+
+  .metric-card .m-label {
+    font-size: 10px;
+    font-family: var(--mono);
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+  }
+
+  .metric-card .m-val {
+    font-size: 28px;
+    font-weight: 300;
+    font-family: var(--mono);
+    color: var(--green);
+  }
+
+  /* Confusion matrix */
+  .cm-wrap { overflow-x: auto; }
+
+  .cm-table {
+    border-collapse: collapse;
+    font-family: var(--mono);
+    font-size: 13px;
+    width: 100%;
+  }
+
+  .cm-table th {
+    padding: 8px 14px;
+    color: var(--muted);
+    font-weight: 400;
+    font-size: 11px;
+    text-align: center;
+    letter-spacing: 0.08em;
+  }
+
+  .cm-table td {
+    padding: 14px 20px;
+    text-align: center;
+    border: 1px solid var(--border);
+    font-size: 20px;
+    font-weight: 500;
+  }
+
+  .cm-tp { background: rgba(16,185,129,0.12); color: var(--green); }
+  .cm-tn { background: rgba(16,185,129,0.08); color: var(--green); }
+  .cm-fp { background: rgba(239,68,68,0.10); color: var(--red); }
+  .cm-fn { background: rgba(245,158,11,0.10); color: var(--amber); }
+
+  /* Feature importance bars */
+  .feat-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .feat-name {
+    font-size: 12px;
+    color: var(--text);
+    width: 220px;
+    flex-shrink: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .feat-bar-bg {
+    flex: 1;
+    height: 6px;
+    background: var(--surface2);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .feat-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width 0.8s cubic-bezier(0.16,1,0.3,1);
+  }
+
+  .feat-pct {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    width: 40px;
+    text-align: right;
+  }
+
+  /* Form */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+
+  .form-group label {
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .form-group select,
+  .form-group input {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 13px;
+    padding: 9px 12px;
+    outline: none;
+    transition: border-color .2s;
+    width: 100%;
+    -webkit-appearance: none;
+  }
+
+  .form-group select:focus,
+  .form-group input:focus {
+    border-color: var(--accent2);
+  }
+
+  .form-group select option { background: var(--surface2); }
+
+  /* Result */
+  .result-card {
+    border-radius: 12px;
+    padding: 32px;
+    text-align: center;
+    margin-top: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .result-card.approved {
+    background: rgba(16,185,129,0.08);
+    border: 1px solid rgba(16,185,129,0.3);
+  }
+
+  .result-card.rejected {
+    background: rgba(239,68,68,0.08);
+    border: 1px solid rgba(239,68,68,0.3);
+  }
+
+  .result-verdict {
+    font-family: var(--serif);
+    font-size: 42px;
+    font-weight: 400;
+    letter-spacing: -1px;
+    margin-bottom: 8px;
+  }
+
+  .result-card.approved .result-verdict { color: var(--green); }
+  .result-card.rejected .result-verdict { color: var(--red); }
+
+  .result-conf {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  .prob-row {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 16px;
+  }
+
+  .prob-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 24px;
+    text-align: center;
+  }
+
+  .prob-item .pi-label {
+    font-size: 10px;
+    font-family: var(--mono);
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+
+  .prob-item .pi-val {
+    font-size: 22px;
+    font-family: var(--mono);
+    font-weight: 500;
+  }
+
+  .prob-item.green .pi-val { color: var(--green); }
+  .prob-item.red .pi-val { color: var(--red); }
+
+  /* Status bar */
+  .status-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 12px;
+    font-family: var(--mono);
+    color: var(--muted);
+  }
+
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--subtle);
+    flex-shrink: 0;
+  }
+
+  .status-dot.trained { background: var(--green); box-shadow: 0 0 8px var(--green); }
+  .status-dot.loading { background: var(--amber); animation: pulse 1s infinite; }
+
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  .error-msg {
+    background: rgba(239,68,68,0.08);
+    border: 1px solid rgba(239,68,68,0.2);
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: var(--red);
+    font-size: 12px;
+    font-family: var(--mono);
+    margin-top: 12px;
+  }
+
+  footer {
+    margin-top: 60px;
+    text-align: center;
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--subtle);
+    letter-spacing: 0.06em;
+  }
+
+  @media (max-width: 600px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .train-info { grid-template-columns: 1fr 1fr; }
+    .metrics-grid { grid-template-columns: 1fr; }
+    header { flex-direction: column; }
+    .logo-block h1 { font-size: 28px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="logo-block">
+      <h1>Crédito<span>ML</span></h1>
+      <p>Roboadvisor crediticio · German Credit Dataset</p>
+    </div>
+    <div class="badge-uc">UC Chile · Fintech · 2025</div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('train')">
+      <span class="dot"></span> Entrenar modelo
+    </button>
+    <button class="tab-btn" id="predict-tab-btn" onclick="switchTab('predict')">
+      <span class="dot"></span> Evaluar solicitud
+    </button>
+  </div>
+
+  <!-- STATUS BAR -->
+  <div class="status-bar">
+    <div class="status-dot" id="status-dot"></div>
+    <span id="status-text">Modelo no entrenado — ve a "Entrenar modelo" para comenzar</span>
+  </div>
+
+  <!-- ===== TRAIN PANEL ===== -->
+  <div class="panel active" id="panel-train">
+
+    <div class="card">
+      <div class="card-title">Dataset</div>
+      <div class="train-info">
+        <div class="info-chip">
+          <div class="label">Fuente</div>
+          <div class="val accent" style="font-size:13px;font-family:var(--mono);">UCI Repository</div>
+        </div>
+        <div class="info-chip">
+          <div class="label">Registros</div>
+          <div class="val">1.000</div>
+        </div>
+        <div class="info-chip">
+          <div class="label">Variables</div>
+          <div class="val">20</div>
+        </div>
+      </div>
+      <p style="font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:20px;">
+        El dataset <em>Statlog German Credit</em> (Hofmann, 1994) contiene información de 1.000 solicitantes
+        de crédito en Alemania. Cada registro incluye variables financieras, demográficas y de comportamiento
+        crediticio. La variable objetivo clasifica a cada solicitante como <strong style="color:var(--green)">buen riesgo</strong>
+        (700 casos) o <strong style="color:var(--red)">mal riesgo</strong> (300 casos).
+        El modelo Random Forest se entrenará con un 80% de los datos y será evaluado con el 20% restante.
+      </p>
+      <button class="btn btn-primary" id="train-btn" onclick="trainModel()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Descargar datos y entrenar
+      </button>
+      <div id="train-error"></div>
+    </div>
+
+    <!-- Results -->
+    <div id="train-results" style="display:none;">
+
+      <div class="card">
+        <div class="card-title">Métricas de desempeño</div>
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="m-label">Exactitud (Accuracy)</div>
+            <div class="m-val" id="m-accuracy">—</div>
+          </div>
+          <div class="metric-card">
+            <div class="m-label">AUC-ROC</div>
+            <div class="m-val" id="m-auc">—</div>
+          </div>
+          <div class="metric-card" style="grid-column:1/-1;">
+            <div class="m-label">Muestras — entrenamiento / prueba</div>
+            <div style="display:flex;gap:24px;margin-top:6px;">
+              <div>
+                <div style="font-size:11px;color:var(--muted);font-family:var(--mono);">Train</div>
+                <div class="m-val" style="font-size:22px;" id="m-train">—</div>
+              </div>
+              <div>
+                <div style="font-size:11px;color:var(--muted);font-family:var(--mono);">Test</div>
+                <div class="m-val" style="font-size:22px;" id="m-test">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Matriz de confusión</div>
+        <div class="cm-wrap">
+          <table class="cm-table">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Predicho: Aprobado</th>
+                <th>Predicho: Rechazado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th style="text-align:left;padding:8px 14px;color:var(--muted);font-size:11px;">Real: Aprobado</th>
+                <td class="cm-tn" id="cm-tn">—</td>
+                <td class="cm-fp" id="cm-fp">—</td>
+              </tr>
+              <tr>
+                <th style="text-align:left;padding:8px 14px;color:var(--muted);font-size:11px;">Real: Rechazado</th>
+                <td class="cm-fn" id="cm-fn">—</td>
+                <td class="cm-tp" id="cm-tp">—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:11px;color:var(--muted);margin-top:12px;font-family:var(--mono);line-height:1.6;">
+          TN = correctamente aprobados · FP = aprobados mal clasificados · FN = rechazados mal clasificados · TP = correctamente rechazados
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Variables más relevantes (top 10)</div>
+        <div id="feat-importance"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== PREDICT PANEL ===== -->
+  <div class="panel" id="panel-predict">
+
+    <div class="card">
+      <div class="card-title">Datos del solicitante</div>
+      <div class="form-grid" id="predict-form">
+
+        <div class="form-group">
+          <label>Duración del crédito (meses)</label>
+          <input type="number" id="f-duration" value="12" min="1" max="72">
+        </div>
+        <div class="form-group">
+          <label>Monto del crédito (DM)</label>
+          <input type="number" id="f-credit_amount" value="2000" min="100" max="20000">
+        </div>
+        <div class="form-group">
+          <label>Edad (años)</label>
+          <input type="number" id="f-age" value="30" min="18" max="80">
+        </div>
+        <div class="form-group">
+          <label>Tasa de cuota (% ingreso)</label>
+          <input type="number" id="f-installment_rate" value="2" min="1" max="4">
+        </div>
+        <div class="form-group">
+          <label>Cuenta corriente</label>
+          <select id="f-checking_account">
+            <option value="A14">Sin cuenta corriente</option>
+            <option value="A11">&lt; 0 DM (negativo)</option>
+            <option value="A12">0–200 DM</option>
+            <option value="A13">&gt; 200 DM / con salario</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Historial crediticio</label>
+          <select id="f-credit_history">
+            <option value="A32">Créditos existentes al día</option>
+            <option value="A30">Sin créditos / todos pagados</option>
+            <option value="A31">Todos pagados en este banco</option>
+            <option value="A33">Retrasos en el pasado</option>
+            <option value="A34">Cuenta crítica / otros bancos</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Propósito del crédito</label>
+          <select id="f-purpose">
+            <option value="A43">Radio / televisión</option>
+            <option value="A40">Auto (nuevo)</option>
+            <option value="A41">Auto (usado)</option>
+            <option value="A42">Muebles / equipos</option>
+            <option value="A46">Educación</option>
+            <option value="A49">Negocios</option>
+            <option value="A410">Otros</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Cuenta de ahorro</label>
+          <select id="f-savings_account">
+            <option value="A61">&lt; 100 DM</option>
+            <option value="A62">100–500 DM</option>
+            <option value="A63">500–1000 DM</option>
+            <option value="A64">&gt; 1000 DM</option>
+            <option value="A65">Desconocido / sin ahorro</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Tiempo de empleo actual</label>
+          <select id="f-employment">
+            <option value="A73">1–4 años</option>
+            <option value="A71">Desempleado</option>
+            <option value="A72">&lt; 1 año</option>
+            <option value="A74">4–7 años</option>
+            <option value="A75">&gt; 7 años</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Estado civil / sexo</label>
+          <select id="f-personal_status">
+            <option value="A93">Hombre soltero</option>
+            <option value="A91">Hombre divorciado</option>
+            <option value="A92">Mujer divorciada / casada</option>
+            <option value="A94">Hombre casado / viudo</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Otros deudores / garantes</label>
+          <select id="f-other_debtors">
+            <option value="A101">Ninguno</option>
+            <option value="A102">Co-solicitante</option>
+            <option value="A103">Garante</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Años en residencia actual</label>
+          <input type="number" id="f-residence_since" value="2" min="1" max="4">
+        </div>
+        <div class="form-group">
+          <label>Propiedad más valiosa</label>
+          <select id="f-property">
+            <option value="A121">Bien raíz</option>
+            <option value="A122">Seguro de vida / ahorro</option>
+            <option value="A123">Auto u otros bienes</option>
+            <option value="A124">Sin propiedad</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Otros planes de cuotas</label>
+          <select id="f-other_installments">
+            <option value="A143">Ninguno</option>
+            <option value="A141">Banco</option>
+            <option value="A142">Tiendas</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Tipo de vivienda</label>
+          <select id="f-housing">
+            <option value="A152">Propiedad propia</option>
+            <option value="A151">Arriendo</option>
+            <option value="A153">Gratuita</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Créditos existentes en este banco</label>
+          <input type="number" id="f-existing_credits" value="1" min="1" max="4">
+        </div>
+        <div class="form-group">
+          <label>Tipo de trabajo</label>
+          <select id="f-job">
+            <option value="A173">Empleado calificado / funcionario</option>
+            <option value="A171">Desempleado / no calificado</option>
+            <option value="A172">No calificado residente</option>
+            <option value="A174">Alta dirección / independiente</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Personas a cargo</label>
+          <input type="number" id="f-dependents" value="1" min="1" max="2">
+        </div>
+        <div class="form-group">
+          <label>Teléfono registrado</label>
+          <select id="f-telephone">
+            <option value="A192">Sí</option>
+            <option value="A191">No</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Trabajador extranjero</label>
+          <select id="f-foreign_worker">
+            <option value="A201">Sí</option>
+            <option value="A202">No</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-top:24px;">
+        <button class="btn btn-primary" id="predict-btn" onclick="runPredict()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+          Evaluar solicitud
+        </button>
+        <div id="predict-error"></div>
+      </div>
+    </div>
+
+    <div id="predict-result"></div>
+
+  </div>
+
+  <footer>CréditoML · Trabajo Final Fintech · UC Chile · Dataset: Hofmann (1994) Statlog German Credit · CC BY 4.0</footer>
+
+</div>
+
+<script>
+  let modelB64 = null;
+
+  function switchTab(tab) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('panel-' + tab).classList.add('active');
+    event.currentTarget.classList.add('active');
+  }
+
+  function setStatus(state, msg) {
+    const dot = document.getElementById('status-dot');
+    const txt = document.getElementById('status-text');
+    dot.className = 'status-dot ' + state;
+    txt.textContent = msg;
+  }
+
+  async function trainModel() {
+    const btn = document.getElementById('train-btn');
+    const errDiv = document.getElementById('train-error');
+    errDiv.innerHTML = '';
+    btn.disabled = true;
+    btn.innerHTML = '<span class="loader"></span> Descargando datos y entrenando…';
+    setStatus('loading', 'Conectando con UCI Repository y entrenando Random Forest…');
+
+    try {
+      const res = await fetch('/api/train', { method: 'POST' });
+      const data = await res.json();
+
+      if (!data.success) throw new Error(data.error);
+
+      modelB64 = data.model_b64;
+      const m = data.metrics;
+
+      // Fill metrics
+      document.getElementById('m-accuracy').textContent = (m.accuracy * 100).toFixed(1) + '%';
+      document.getElementById('m-auc').textContent = (m.auc_roc * 100).toFixed(1) + '%';
+      document.getElementById('m-train').textContent = m.train_samples;
+      document.getElementById('m-test').textContent = m.test_samples;
+
+      // Confusion matrix — cm[0]=good row, cm[1]=bad row
+      const cm = m.confusion_matrix;
+      document.getElementById('cm-tn').textContent = cm[0][0];
+      document.getElementById('cm-fp').textContent = cm[0][1];
+      document.getElementById('cm-fn').textContent = cm[1][0];
+      document.getElementById('cm-tp').textContent = cm[1][1];
+
+      // Feature importance bars
+      const feats = m.top_features;
+      const maxImp = feats[0].importance;
+      const container = document.getElementById('feat-importance');
+      container.innerHTML = feats.map(f => `
+        <div class="feat-row">
+          <div class="feat-name">${f.feature}</div>
+          <div class="feat-bar-bg">
+            <div class="feat-bar-fill" style="width:${(f.importance/maxImp*100).toFixed(1)}%"></div>
+          </div>
+          <div class="feat-pct">${(f.importance*100).toFixed(1)}%</div>
+        </div>
+      `).join('');
+
+      document.getElementById('train-results').style.display = 'block';
+      setStatus('trained', `Modelo entrenado · Accuracy ${(m.accuracy*100).toFixed(1)}% · AUC-ROC ${(m.auc_roc*100).toFixed(1)}% · Listo para evaluar solicitudes`);
+      btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> Modelo entrenado — reentrenar';
+      btn.disabled = false;
+
+    } catch (err) {
+      errDiv.innerHTML = `<div class="error-msg">Error: ${err.message}</div>`;
+      setStatus('', 'Error al entrenar — revisa la consola');
+      btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> Reintentar';
+      btn.disabled = false;
+    }
+  }
+
+  async function runPredict() {
+    if (!modelB64) {
+      document.getElementById('predict-error').innerHTML =
+        '<div class="error-msg">Primero debes entrenar el modelo en la pestaña "Entrenar modelo"</div>';
+      return;
+    }
+
+    const btn = document.getElementById('predict-btn');
+    const errDiv = document.getElementById('predict-error');
+    errDiv.innerHTML = '';
+    btn.disabled = true;
+    btn.innerHTML = '<span class="loader"></span> Evaluando…';
+
+    const fields = [
+      'checking_account','duration','credit_history','purpose','credit_amount',
+      'savings_account','employment','installment_rate','personal_status',
+      'other_debtors','residence_since','property','age','other_installments',
+      'housing','existing_credits','job','dependents','telephone','foreign_worker'
+    ];
+
+    const applicant = {};
+    fields.forEach(f => {
+      const el = document.getElementById('f-' + f);
+      applicant[f] = el ? el.value : '';
+    });
+
+    try {
+      const res = await fetch('/api/predict', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model_b64: modelB64, applicant })
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error);
+
+      const approved = data.decision === 'APROBADO';
+      const cls = approved ? 'approved' : 'rejected';
+      const emoji = approved ? '✓' : '✗';
+
+      document.getElementById('predict-result').innerHTML = `
+        <div class="result-card ${cls}">
+          <div class="result-verdict">${emoji} ${data.decision}</div>
+          <div class="result-conf">Confianza del modelo: ${data.confidence}%</div>
+          <div class="prob-row">
+            <div class="prob-item green">
+              <div class="pi-label">P(Aprobado)</div>
+              <div class="pi-val">${data.prob_approved}%</div>
+            </div>
+            <div class="prob-item red">
+              <div class="pi-label">P(Rechazado)</div>
+              <div class="pi-val">${data.prob_rejected}%</div>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:16px;">
+          <div class="card-title">Factores más influyentes en esta decisión</div>
+          ${data.top_factors.map(f => `
+            <div class="feat-row">
+              <div class="feat-name">${f.feature}</div>
+              <div class="feat-bar-bg">
+                <div class="feat-bar-fill" style="width:${(f.importance / data.top_factors[0].importance * 100).toFixed(1)}%"></div>
+              </div>
+              <div class="feat-pct">${(f.importance*100).toFixed(1)}%</div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+
+    } catch (err) {
+      errDiv.innerHTML = `<div class="error-msg">Error: ${err.message}</div>`;
+    }
+
+    btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> Evaluar solicitud';
+    btn.disabled = false;
+  }
+</script>
+</body>
+</html>
