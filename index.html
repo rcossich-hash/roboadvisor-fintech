@@ -4,24 +4,24 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CréditoML — Roboadvisor Crediticio</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0a0f1e;
-    --surface: #111827;
-    --surface2: #1a2236;
-    --border: #1e2d45;
-    --accent: #2563eb;
-    --accent2: #3b82f6;
-    --green: #10b981;
-    --red: #ef4444;
-    --amber: #f59e0b;
-    --text: #e2e8f0;
-    --muted: #64748b;
-    --subtle: #334155;
-    --mono: 'DM Mono', monospace;
-    --serif: 'DM Serif Display', serif;
-    --sans: 'DM Sans', sans-serif;
+    --bg:      #0a1628;
+    --surface: #102890;
+    --surface2: #183CC0;
+    --border:  #1d3a8a;
+    --accent:  #1534B7;
+    --accent2: #4DD9E8;
+    --green:   #6EE7B7;
+    --red:     #F87171;
+    --amber:   #FBBF24;
+    --text:    #FFFFFF;
+    --muted:   #B0B8D0;
+    --subtle:  #707898;
+    --mono: 'Consolas', monospace;
+    --serif: 'Noto Sans', sans-serif;
+    --sans: 'Inter', 'Noto Sans', sans-serif;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -41,10 +41,10 @@
     position: fixed;
     inset: 0;
     background-image:
-      linear-gradient(var(--border) 1px, transparent 1px),
-      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      linear-gradient(rgba(77,217,232,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(77,217,232,0.06) 1px, transparent 1px);
     background-size: 40px 40px;
-    opacity: 0.3;
+    opacity: 1;
     pointer-events: none;
     z-index: 0;
   }
@@ -67,35 +67,39 @@
   }
 
   .logo-block h1 {
-    font-family: var(--serif);
-    font-size: 36px;
-    font-weight: 400;
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
     letter-spacing: -0.5px;
     line-height: 1;
     color: #fff;
   }
 
-  .logo-block h1 span { color: var(--accent2); font-style: italic; }
+  .logo-block h1 span { color: var(--accent2); font-style: normal; }
 
   .logo-block p {
     margin-top: 6px;
-    font-size: 12px;
+    font-size: 11px;
     color: var(--muted);
-    font-family: var(--mono);
-    letter-spacing: 0.08em;
+    font-family: var(--sans);
+    letter-spacing: 0.12em;
     text-transform: uppercase;
   }
 
   .badge-uc {
     background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 6px 12px;
+    border: 1px solid var(--accent2);
+    border-radius: 8px;
+    padding: 6px 14px;
     font-size: 11px;
-    color: var(--muted);
-    font-family: var(--mono);
+    color: var(--accent2);
+    font-family: var(--sans);
     white-space: nowrap;
     margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    letter-spacing: 0.04em;
   }
 
   /* Tabs */
@@ -127,8 +131,8 @@
   }
 
   .tab-btn.active {
-    background: var(--accent);
-    color: #fff;
+    background: var(--accent2);
+    color: #000;
   }
 
   .tab-btn:not(.active):hover {
@@ -156,7 +160,7 @@
   .card-title {
     font-family: var(--mono);
     font-size: 11px;
-    color: var(--muted);
+    color: var(--accent2);
     text-transform: uppercase;
     letter-spacing: 0.12em;
     margin-bottom: 20px;
@@ -169,7 +173,8 @@
     content: '';
     flex: 1;
     height: 1px;
-    background: var(--border);
+    background: var(--accent2);
+    opacity: 0.3;
   }
 
   /* Train section */
@@ -220,11 +225,12 @@
   }
 
   .btn-primary {
-    background: var(--accent);
-    color: #fff;
+    background: var(--accent2);
+    color: #000;
+    font-weight: 600;
   }
 
-  .btn-primary:hover { background: var(--accent2); transform: translateY(-1px); }
+  .btn-primary:hover { background: #67E8F9; transform: translateY(-1px); }
   .btn-primary:active { transform: none; }
   .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
@@ -594,6 +600,41 @@
     border-radius: 8px; padding: 10px 14px; font-size: 12px;
     color: var(--muted); font-family: var(--mono); margin-bottom: 16px;
   }
+  /* ── Stats panel ── */
+  .stats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 20px; }
+  .stat-chip { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
+  .stat-chip .s-label { font-size: 10px; font-family: var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
+  .stat-chip .s-val { font-size: 20px; font-family: var(--mono); color: var(--accent2); font-weight: 600; }
+  .stat-chip .s-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .var-select-row { display: flex; gap: 10px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+  .var-select-row label { font-size: 11px; font-family: var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  .var-select { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: var(--sans); font-size: 13px; padding: 8px 12px; outline: none; }
+  .var-select:focus { border-color: var(--accent2); }
+  .dist-chart-wrap { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 20px; }
+  .stats-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .stats-table th { padding: 10px 12px; text-align: left; font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; background: var(--accent); color: #fff; }
+  .stats-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); color: var(--text); }
+  .stats-table tr:hover td { background: rgba(77,217,232,0.05); }
+  .stats-table .val-num { font-family: var(--mono); color: var(--accent2); }
+  .cat-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .cat-bar-label { font-size: 12px; color: var(--muted); width: 200px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cat-bar-bg { flex: 1; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; }
+  .cat-bar-fill { height: 6px; border-radius: 3px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width .6s ease; }
+  .cat-bar-pct { font-size: 11px; font-family: var(--mono); color: var(--muted); width: 44px; text-align: right; }
+
+  /* ── Docs panel ── */
+  .docs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .doc-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 12px; transition: border-color .2s; }
+  .doc-card:hover { border-color: var(--accent2); }
+  .doc-icon { width: 40px; height: 40px; background: rgba(77,217,232,0.1); border: 1px solid rgba(77,217,232,0.3); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--accent2); }
+  .doc-title { font-size: 15px; font-weight: 600; font-family: 'Noto Sans', sans-serif; color: var(--text); }
+  .doc-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+  .doc-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .doc-tag { font-size: 10px; font-family: var(--mono); padding: 3px 8px; border-radius: 4px; background: rgba(77,217,232,0.08); border: 1px solid rgba(77,217,232,0.2); color: var(--accent2); letter-spacing: 0.05em; }
+  .doc-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: var(--accent); color: #fff; border-radius: 6px; font-size: 12px; font-family: var(--sans); font-weight: 500; text-decoration: none; border: none; cursor: pointer; transition: background .2s; margin-top: auto; }
+  .doc-btn:hover { background: var(--accent2); color: #000; }
+  .doc-btn svg { flex-shrink: 0; }
+  .docs-note { background: rgba(77,217,232,0.06); border: 1px solid rgba(77,217,232,0.2); border-left: 3px solid var(--accent2); border-radius: 8px; padding: 12px 16px; font-size: 12px; color: var(--muted); margin-bottom: 20px; line-height: 1.6; }
 </style>
 </head>
 <body>
@@ -601,21 +642,30 @@
 
   <header>
     <div class="logo-block">
-      <h1>Crédito<span>ML</span></h1>
-      <p>Roboadvisor crediticio · German Credit Dataset</p>
+      <h1>crédito<span>ML</span></h1>
+      <p>Credit Scoring · German Credit Dataset · UCI Repository</p>
     </div>
-    <div class="badge-uc">UC Chile · Fintech · 2025</div>
+    <div class="badge-uc">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--accent2)"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Random Forest · CC BY 4.0
+    </div>
   </header>
 
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('train')">
-      <span class="dot"></span> Entrenar modelo
+      <span class="dot"></span> Entrenar
     </button>
     <button class="tab-btn" onclick="switchTab('experiment')">
       <span class="dot"></span> Experimentos
     </button>
+    <button class="tab-btn" onclick="switchTab('stats')">
+      <span class="dot"></span> Estadísticas
+    </button>
     <button class="tab-btn" id="predict-tab-btn" onclick="switchTab('predict')">
-      <span class="dot"></span> Evaluar solicitud
+      <span class="dot"></span> Evaluar
+    </button>
+    <button class="tab-btn" onclick="switchTab('docs')">
+      <span class="dot"></span> Documentación
     </button>
   </div>
 
@@ -1074,19 +1124,169 @@
 
   </div>
 
-  <footer>CréditoML · Trabajo Final Fintech · UC Chile · Dataset: Hofmann (1994) Statlog German Credit · CC BY 4.0</footer>
+  <!-- ===== STATS PANEL ===== -->
+  <div class="panel" id="panel-stats">
+
+    <div class="card">
+      <div class="card-title">Resumen del dataset</div>
+      <div class="stats-grid">
+        <div class="stat-chip"><div class="s-label">Total registros</div><div class="s-val">1.000</div><div class="s-sub">German Credit Dataset</div></div>
+        <div class="stat-chip"><div class="s-label">Buen riesgo</div><div class="s-val" style="color:var(--green)">700</div><div class="s-sub">70% del dataset</div></div>
+        <div class="stat-chip"><div class="s-label">Mal riesgo</div><div class="s-val" style="color:var(--red)">300</div><div class="s-sub">30% del dataset</div></div>
+        <div class="stat-chip"><div class="s-label">Variables</div><div class="s-val">20</div><div class="s-sub">7 numéricas · 13 categóricas</div></div>
+        <div class="stat-chip"><div class="s-label">Año del dataset</div><div class="s-val">1994</div><div class="s-sub">Hofmann, Univ. Hamburg</div></div>
+        <div class="stat-chip"><div class="s-label">Licencia</div><div class="s-val" style="font-size:14px">CC BY 4.0</div><div class="s-sub">UCI Repository ID: 144</div></div>
+      </div>
+    </div>
+
+    <!-- Variable selector -->
+    <div class="card">
+      <div class="card-title">Distribución de variables</div>
+      <div class="var-select-row">
+        <label>Variable:</label>
+        <select class="var-select" id="var-selector" onchange="renderVarChart()">
+          <optgroup label="Variables numéricas">
+            <option value="duration">Duración del crédito (meses)</option>
+            <option value="credit_amount">Monto del crédito (DM)</option>
+            <option value="installment_rate">Tasa de cuota (% ingreso)</option>
+            <option value="residence_since">Años en residencia</option>
+            <option value="age">Edad (años)</option>
+            <option value="existing_credits">Créditos existentes</option>
+            <option value="dependents">Personas a cargo</option>
+          </optgroup>
+          <optgroup label="Variables categóricas">
+            <option value="checking_account">Estado cuenta corriente</option>
+            <option value="credit_history">Historial crediticio</option>
+            <option value="purpose">Propósito del crédito</option>
+            <option value="savings_account">Cuenta de ahorro</option>
+            <option value="employment">Tiempo de empleo</option>
+            <option value="personal_status">Estado civil / sexo</option>
+            <option value="other_debtors">Otros deudores</option>
+            <option value="property">Propiedad más valiosa</option>
+            <option value="housing">Tipo de vivienda</option>
+            <option value="job">Tipo de trabajo</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="dist-chart-wrap">
+        <svg id="dist-chart" width="100%" height="200" viewBox="0 0 820 200" style="overflow:visible"></svg>
+      </div>
+    </div>
+
+    <!-- Stats table for numeric variables -->
+    <div class="card" id="stats-num-card">
+      <div class="card-title">Estadísticas descriptivas</div>
+      <table class="stats-table" id="stats-num-table">
+        <thead><tr>
+          <th>Variable</th><th>Media</th><th>Mediana</th><th>Std</th><th>Min</th><th>P25</th><th>P75</th><th>Max</th>
+        </tr></thead>
+        <tbody>
+          <tr><td>Duración (meses)</td><td class="val-num">20.9</td><td class="val-num">18.0</td><td class="val-num">11.9</td><td class="val-num">4</td><td class="val-num">12</td><td class="val-num">24</td><td class="val-num">72</td></tr>
+          <tr><td>Monto (DM)</td><td class="val-num">3.271</td><td class="val-num">2.320</td><td class="val-num">2.823</td><td class="val-num">250</td><td class="val-num">1.366</td><td class="val-num">3.972</td><td class="val-num">18.424</td></tr>
+          <tr><td>Tasa cuota (%)</td><td class="val-num">2.97</td><td class="val-num">3.0</td><td class="val-num">1.12</td><td class="val-num">1</td><td class="val-num">2</td><td class="val-num">4</td><td class="val-num">4</td></tr>
+          <tr><td>Residencia (años)</td><td class="val-num">2.85</td><td class="val-num">3.0</td><td class="val-num">1.10</td><td class="val-num">1</td><td class="val-num">2</td><td class="val-num">4</td><td class="val-num">4</td></tr>
+          <tr><td>Edad (años)</td><td class="val-num">35.5</td><td class="val-num">33.0</td><td class="val-num">11.4</td><td class="val-num">19</td><td class="val-num">27</td><td class="val-num">42</td><td class="val-num">75</td></tr>
+          <tr><td>Créditos existentes</td><td class="val-num">1.41</td><td class="val-num">1.0</td><td class="val-num">0.58</td><td class="val-num">1</td><td class="val-num">1</td><td class="val-num">2</td><td class="val-num">4</td></tr>
+          <tr><td>Dependientes</td><td class="val-num">1.15</td><td class="val-num">1.0</td><td class="val-num">0.36</td><td class="val-num">1</td><td class="val-num">1</td><td class="val-num">1</td><td class="val-num">2</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- ===== DOCS PANEL ===== -->
+  <div class="panel" id="panel-docs">
+
+    <div class="docs-note">
+      📎 Los documentos se abren en una nueva pestaña. Si el navegador bloquea la descarga, haz clic derecho → "Guardar enlace como".
+    </div>
+
+    <div class="docs-grid">
+
+      <div class="doc-card">
+        <div class="doc-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        </div>
+        <div class="doc-title">Análisis del Modelo y los Datos</div>
+        <div class="doc-desc">Exploración completa del dataset German Credit: distribuciones, correlaciones, estadísticas por clase. Funcionamiento detallado de Random Forest, parámetros, importancia de variables y comparación con otros algoritmos.</div>
+        <div class="doc-tags">
+          <span class="doc-tag">EDA</span>
+          <span class="doc-tag">Random Forest</span>
+          <span class="doc-tag">Correlaciones</span>
+          <span class="doc-tag">Feature Importance</span>
+          <span class="doc-tag">Comparación modelos</span>
+        </div>
+        <a class="doc-btn" href="/docs/DOC1_Analisis_Modelo_Datos.docx" download>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Descargar documento
+        </a>
+      </div>
+
+      <div class="doc-card">
+        <div class="doc-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        </div>
+        <div class="doc-title">Guía de Código Python</div>
+        <div class="doc-desc">Documentación técnica completa del código: arquitectura serverless en Vercel, APIs de entrenamiento y predicción comentadas línea por línea, flujo de datos, serialización del modelo y guía de deploy en GitHub.</div>
+        <div class="doc-tags">
+          <span class="doc-tag">Python</span>
+          <span class="doc-tag">Vercel</span>
+          <span class="doc-tag">API</span>
+          <span class="doc-tag">pickle + base64</span>
+          <span class="doc-tag">scikit-learn</span>
+        </div>
+        <a class="doc-btn" href="/docs/DOC2_Guia_Codigo_Python.docx" download>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Descargar documento
+        </a>
+      </div>
+
+      <div class="doc-card">
+        <div class="doc-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
+        </div>
+        <div class="doc-title">Guía de Experimentos</div>
+        <div class="doc-desc">Manual del tab Experimentos: descripción detallada de los 4 parámetros configurables (n_estimators, max_depth, test_size, class_weight), efectos esperados por rango, combinaciones recomendadas y métricas resultantes.</div>
+        <div class="doc-tags">
+          <span class="doc-tag">n_estimators</span>
+          <span class="doc-tag">max_depth</span>
+          <span class="doc-tag">class_weight</span>
+          <span class="doc-tag">AUC-ROC</span>
+          <span class="doc-tag">Matriz confusión</span>
+        </div>
+        <a class="doc-btn" href="/docs/DOC3_Guia_Experimentos.docx" download>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Descargar documento
+        </a>
+      </div>
+
+      <div class="doc-card">
+        <div class="doc-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </div>
+        <div class="doc-title">Informe Final</div>
+        <div class="doc-desc">Informe académico completo del proyecto: descripción del problema financiero, diseño del algoritmo, análisis de datos, implementación del modelo, resultados con métricas reales, interpretación económica y referencias APA.</div>
+        <div class="doc-tags">
+          <span class="doc-tag">Informe</span>
+          <span class="doc-tag">Accuracy 75.5%</span>
+          <span class="doc-tag">AUC 79.4%</span>
+          <span class="doc-tag">Referencias APA</span>
+        </div>
+        <a class="doc-btn" href="/docs/DOC4_Informe_Final.docx" download>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Descargar documento
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>CréditoML · Dataset: Hofmann (1994) Statlog German Credit · UCI Repository · CC BY 4.0</footer>
 
 </div>
 
 <script>
   let modelB64 = null;
-
-  function switchTab(tab) {
-    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('panel-' + tab).classList.add('active');
-    event.currentTarget.classList.add('active');
-  }
 
   function setStatus(state, msg) {
     const dot = document.getElementById('status-dot');
@@ -1487,9 +1687,215 @@
     }
   }
 
-  // Init previews on load
+
+  // ═══════════════════════════════════════════════════════════
+  // ESTADÍSTICAS — Distribution Charts
+  // ═══════════════════════════════════════════════════════════
+
+  const VAR_DATA = {
+    duration: {
+      type: 'histogram',
+      label: 'Duración del crédito (meses)',
+      bins: [
+        {range:'4-12', count:234}, {range:'13-18', count:218}, {range:'19-24', count:187},
+        {range:'25-30', count:112}, {range:'31-42', count:143}, {range:'43-72', count:106}
+      ]
+    },
+    credit_amount: {
+      type: 'histogram',
+      label: 'Monto del crédito (DM)',
+      bins: [
+        {range:'<1.000', count:118}, {range:'1-2K', count:202}, {range:'2-3K', count:176},
+        {range:'3-5K', count:231}, {range:'5-8K', count:162}, {range:'>8K', count:111}
+      ]
+    },
+    installment_rate: {
+      type: 'bar',
+      label: 'Tasa de cuota (% del ingreso)',
+      bins: [{range:'1%', count:249}, {range:'2%', count:231}, {range:'3%', count:157}, {range:'4%', count:363}]
+    },
+    residence_since: {
+      type: 'bar',
+      label: 'Años en residencia actual',
+      bins: [{range:'1 año', count:130}, {range:'2 años', count:308}, {range:'3 años', count:149}, {range:'4 años', count:413}]
+    },
+    age: {
+      type: 'histogram',
+      label: 'Edad del solicitante (años)',
+      bins: [
+        {range:'19-25', count:134}, {range:'26-30', count:178}, {range:'31-35', count:162},
+        {range:'36-42', count:187}, {range:'43-55', count:218}, {range:'56-75', count:121}
+      ]
+    },
+    existing_credits: {
+      type: 'bar',
+      label: 'Créditos existentes en el banco',
+      bins: [{range:'1', count:633}, {range:'2', count:333}, {range:'3', count:28}, {range:'4', count:6}]
+    },
+    dependents: {
+      type: 'bar',
+      label: 'Personas a cargo',
+      bins: [{range:'1', count:845}, {range:'2', count:155}]
+    },
+    checking_account: {
+      type: 'cat',
+      label: 'Estado de cuenta corriente',
+      bins: [
+        {range:'< 0 DM (negativo)', count:274},
+        {range:'0–200 DM', count:269},
+        {range:'> 200 DM / con salario', count:63},
+        {range:'Sin cuenta corriente', count:394}
+      ]
+    },
+    credit_history: {
+      type: 'cat',
+      label: 'Historial crediticio',
+      bins: [
+        {range:'Sin créditos / todos pagados', count:40},
+        {range:'Todos pagados en este banco', count:49},
+        {range:'Créditos existentes al día', count:530},
+        {range:'Retrasos en el pasado', count:88},
+        {range:'Cuenta crítica / otros bancos', count:293}
+      ]
+    },
+    purpose: {
+      type: 'cat',
+      label: 'Propósito del crédito',
+      bins: [
+        {range:'Auto (nuevo)', count:234}, {range:'Auto (usado)', count:103},
+        {range:'Muebles/equipos', count:181}, {range:'Radio/TV', count:280},
+        {range:'Educación', count:50}, {range:'Negocios', count:97}, {range:'Otros', count:55}
+      ]
+    },
+    savings_account: {
+      type: 'cat',
+      label: 'Cuenta de ahorro/bonos',
+      bins: [
+        {range:'< 100 DM', count:603}, {range:'100–500 DM', count:103},
+        {range:'500–1000 DM', count:63}, {range:'> 1000 DM', count:48},
+        {range:'Desconocido/sin ahorro', count:183}
+      ]
+    },
+    employment: {
+      type: 'cat',
+      label: 'Tiempo de empleo actual',
+      bins: [
+        {range:'Desempleado', count:62}, {range:'< 1 año', count:172},
+        {range:'1–4 años', count:339}, {range:'4–7 años', count:174}, {range:'> 7 años', count:253}
+      ]
+    },
+    personal_status: {
+      type: 'cat',
+      label: 'Estado civil / sexo',
+      bins: [
+        {range:'Hombre divorciado', count:50}, {range:'Mujer div./casada', count:310},
+        {range:'Hombre soltero', count:548}, {range:'Hombre casado/viudo', count:92}
+      ]
+    },
+    other_debtors: {
+      type: 'cat',
+      label: 'Otros deudores / garantes',
+      bins: [{range:'Ninguno', count:907}, {range:'Co-solicitante', count:41}, {range:'Garante', count:52}]
+    },
+    property: {
+      type: 'cat',
+      label: 'Propiedad más valiosa',
+      bins: [
+        {range:'Bien raíz', count:282}, {range:'Seguro de vida', count:232},
+        {range:'Auto/otros bienes', count:332}, {range:'Sin propiedad', count:154}
+      ]
+    },
+    housing: {
+      type: 'cat',
+      label: 'Tipo de vivienda',
+      bins: [{range:'Arriendo', count:179}, {range:'Propia', count:713}, {range:'Gratuita', count:108}]
+    },
+    job: {
+      type: 'cat',
+      label: 'Tipo de trabajo',
+      bins: [
+        {range:'Desempleado/no calificado', count:22}, {range:'No calificado residente', count:200},
+        {range:'Calificado/funcionario', count:630}, {range:'Alta dirección/indep.', count:148}
+      ]
+    }
+  };
+
+  function renderVarChart() {
+    const varName = document.getElementById('var-selector').value;
+    const vd = VAR_DATA[varName];
+    if (!vd) return;
+
+    const svg = document.getElementById('dist-chart');
+    const W = 820, H = 180, padL = 40, padR = 20, padT = 10, padB = 50;
+    const iW = W - padL - padR, iH = H - padT - padB;
+    const n = vd.bins.length;
+    const maxCount = Math.max(...vd.bins.map(b => b.count));
+
+    let html = '';
+
+    if (vd.type === 'cat') {
+      // Horizontal bars for categorical
+      const rowH = iH / n;
+      vd.bins.forEach((b, i) => {
+        const barW = (b.count / maxCount) * iW * 0.85;
+        const y = padT + i * rowH;
+        const pct = ((b.count / 1000) * 100).toFixed(1);
+        const isGood = b.count > 200;
+        const col = isGood ? 'var(--accent2)' : '#6378b0';
+        html += `<rect x="${padL}" y="${y + 4}" width="${barW}" height="${rowH - 8}" rx="3" fill="${col}" opacity="0.85"/>`;
+        html += `<text x="${padL + barW + 6}" y="${y + rowH/2 + 4}" font-size="11" fill="var(--muted)" font-family="Consolas,monospace">${b.count} (${pct}%)</text>`;
+        // label left
+        const labelText = b.range.length > 22 ? b.range.substring(0,22)+'…' : b.range;
+        html += `<text x="${padL - 4}" y="${y + rowH/2 + 4}" font-size="11" fill="var(--muted)" text-anchor="end" font-family="Inter,sans-serif">${labelText}</text>`;
+      });
+      // axis
+      html += `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${padT+iH}" stroke="var(--border)" stroke-width="1"/>`;
+    } else {
+      // Vertical bars for numeric/ordinal
+      const barW = iW / n * 0.7;
+      const gap   = iW / n;
+      vd.bins.forEach((b, i) => {
+        const barH = (b.count / maxCount) * iH;
+        const x = padL + i * gap + gap * 0.15;
+        const y = padT + iH - barH;
+        const pct = ((b.count / 1000) * 100).toFixed(1);
+        html += `<rect x="${x}" y="${y}" width="${barW}" height="${barH}" rx="3" fill="var(--accent2)" opacity="0.85"/>`;
+        html += `<text x="${x + barW/2}" y="${padT + iH - barH - 5}" font-size="11" fill="var(--muted)" text-anchor="middle" font-family="Consolas,monospace">${b.count}</text>`;
+        // x label
+        html += `<text x="${x + barW/2}" y="${padT + iH + 18}" font-size="11" fill="var(--muted)" text-anchor="middle" font-family="Inter,sans-serif">${b.range}</text>`;
+        html += `<text x="${x + barW/2}" y="${padT + iH + 32}" font-size="10" fill="var(--subtle)" text-anchor="middle" font-family="Consolas,monospace">${pct}%</text>`;
+      });
+      // axis
+      html += `<line x1="${padL}" y1="${padT + iH}" x2="${padL + iW}" y2="${padT + iH}" stroke="var(--border)" stroke-width="1"/>`;
+      html += `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${padT + iH}" stroke="var(--border)" stroke-width="1"/>`;
+      // y grid lines
+      [250,500,750,1000].forEach(v => {
+        const gy = padT + iH - (v / maxCount) * iH;
+        if (gy > padT) {
+          html += `<line x1="${padL}" y1="${gy}" x2="${padL + iW}" y2="${gy}" stroke="var(--border)" stroke-width="1" stroke-dasharray="3,3"/>`;
+          html += `<text x="${padL - 4}" y="${gy + 4}" font-size="10" fill="var(--subtle)" text-anchor="end" font-family="Consolas,monospace">${v}</text>`;
+        }
+      });
+    }
+
+    // title
+    html += `<text x="${W/2}" y="${H - 4}" font-size="12" fill="var(--muted)" text-anchor="middle" font-family="Inter,sans-serif">${vd.label}</text>`;
+    svg.innerHTML = html;
+  }
+
+  // Init stats chart on tab switch
+  const origSwitch = window.switchTab;
+  function switchTab(tab) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('panel-' + tab).classList.add('active');
+    event.currentTarget.classList.add('active');
+    if (tab === 'stats') setTimeout(renderVarChart, 50);
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     updatePreviews();
+    renderVarChart();
   });
 </script>
 </body>
