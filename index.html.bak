@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CréditoML — Roboadvisor Crediticio</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0f1e;
+    --surface: #111827;
+    --surface2: #1a2236;
+    --border: #1e2d45;
+    --accent: #2563eb;
+    --accent2: #3b82f6;
+    --green: #10b981;
+    --red: #ef4444;
+    --amber: #f59e0b;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --subtle: #334155;
+    --mono: 'DM Mono', monospace;
+    --serif: 'DM Serif Display', serif;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.3;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* Header */
+  header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 56px;
+    gap: 16px;
+  }
+
+  .logo-block h1 {
+    font-family: var(--serif);
+    font-size: 36px;
+    font-weight: 400;
+    letter-spacing: -0.5px;
+    line-height: 1;
+    color: #fff;
+  }
+
+  .logo-block h1 span { color: var(--accent2); font-style: italic; }
+
+  .logo-block p {
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--muted);
+    font-family: var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .badge-uc {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: var(--mono);
+    white-space: nowrap;
+    margin-top: 4px;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 2px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 32px;
+    width: fit-content;
+  }
+
+  .tab-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 20px;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: all .2s;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .tab-btn.active {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .tab-btn:not(.active):hover {
+    background: var(--surface2);
+    color: var(--text);
+  }
+
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+  /* Panels */
+  .panel { display: none; }
+  .panel.active { display: block; animation: fadeIn .3s ease; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+
+  .card-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Train section */
+  .train-info {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .info-chip {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+  }
+
+  .info-chip .label {
+    font-size: 10px;
+    font-family: var(--mono);
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+
+  .info-chip .val {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .info-chip .val.accent { color: var(--accent2); }
+
+  /* Button */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all .2s;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .btn-primary:hover { background: var(--accent2); transform: translateY(-1px); }
+  .btn-primary:active { transform: none; }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  /* Loader */
+  .loader {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Metrics grid */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .metric-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 18px;
+  }
+
+  .metric-card .m-label {
+    font-size: 10px;
+    font-family: var(--mono);
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+  }
+
+  .metric-card .m-val {
+    font-size: 28px;
+    font-weight: 300;
+    font-family: var(--mono);
+    color: var(--green);
+  }
+
+  /* Confusion matrix */
+  .cm-wrap { overflow-x: auto; }
+
+  .cm-table {
+    border-collapse: collapse;
+    font-family: var(--mono);
+    font-size: 13px;
+    width: 100%;
+  }
+
+  .cm-table th {
+    padding: 8px 14px;
+    color: var(--muted);
+    font-weight: 400;
+    font-size: 11px;
+    text-align: center;
+    letter-spacing: 0.08em;
+  }
+
+  .cm-table td {
+    padding: 14px 20px;
+    text-align: center;
+    border: 1px solid var(--border);
+    font-size: 20px;
+    font-weight: 500;
+  }
+
+  .cm-tp { background: rgba(16,185,129,0.12); color: var(--green); }
+  .cm-tn { background: rgba(16,185,129,0.08); color: var(--green); }
+  .cm-fp { background: rgba(239,68,68,0.10); color: var(--red); }
+  .cm-fn { background: rgba(245,158,11,0.10); color: var(--amber); }
+
+  /* Feature importance bars */
+  .feat-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .feat-name {
+    font-size: 12px;
+    color: var(--text);
+    width: 220px;
+    flex-shrink: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .feat-bar-bg {
+    flex: 1;
+    height: 6px;
+    background: var(--surface2);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .feat-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width 0.8s cubic-bezier(0.16,1,0.3,1);
+  }
+
+  .feat-pct {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    width: 40px;
+    text-align: right;
+  }
+
+  /* Form */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+
+  .form-group label {
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .form-group select,
+  .form-group input {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 13px;
+    padding: 9px 12px;
+    outline: none;
+    transition: border-color .2s;
+    width: 100%;
+    -webkit-appearance: none;
+  }
+
+  .form-group select:focus,
+  .form-group input:focus {
+    border-color: var(--accent2);
+  }
+
+  .form-group select option { background: var(--surface2); }
+
+  /* Result */
+  .result-card {
+    border-radius: 12px;
+    padding: 32px;
+    text-align: center;
+    margin-top: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .result-card.approved {
+    background: rgba(16,185,129,0.08);
+    border: 1px solid rgba(16,185,129,0.3);
+  }
+
+  .result-card.rejected {
+    background: rgba(239,68,68,0.08);
+    border: 1px solid rgba(239,68,68,0.3);
+  }
+
+  .result-verdict {
+    font-family: var(--serif);
+    font-size: 42px;
+    font-weight: 400;
+    letter-spacing: -1px;
+    margin-bottom: 8px;
+  }
+
+  .result-card.approved .result-verdict { color: var(--green); }
+  .result-card.rejected .result-verdict { color: var(--red); }
+
+  .result-conf {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  .prob-row {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 16px;
+  }
+
+  .prob-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 24px;
+    text-align: center;
+  }
+
+  .prob-item .pi-label {
+    font-size: 10px;
+    font-family: var(--mono);
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+
+  .prob-item .pi-val {
+    font-size: 22px;
+    font-family: var(--mono);
+    font-weight: 500;
+  }
+
+  .prob-item.green .pi-val { color: var(--green); }
+  .prob-item.red .pi-val { color: var(--red); }
+
+  /* Status bar */
+  .status-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 12px;
+    font-family: var(--mono);
+    color: var(--muted);
+  }
+
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--subtle);
+    flex-shrink: 0;
+  }
+
+  .status-dot.trained { background: var(--green); box-shadow: 0 0 8px var(--green); }
+  .status-dot.loading { background: var(--amber); animation: pulse 1s infinite; }
+
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  .error-msg {
+    background: rgba(239,68,68,0.08);
+    border: 1px solid rgba(239,68,68,0.2);
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: var(--red);
+    font-size: 12px;
+    font-family: var(--mono);
+    margin-top: 12px;
+  }
+
+  footer {
+    margin-top: 60px;
+    text-align: center;
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--subtle);
+    letter-spacing: 0.06em;
+  }
+
+  @media (max-width: 600px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .train-info { grid-template-columns: 1fr 1fr; }
+    .metrics-grid { grid-template-columns: 1fr; }
+    header { flex-direction: column; }
+    .logo-block h1 { font-size: 28px; }
+  }
+
+  /* ── Experiment panel ── */
+  .param-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+  .param-group { display: flex; flex-direction: column; gap: 8px; }
+  .param-group label {
+    font-size: 11px; font-family: var(--mono); color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .param-val {
+    background: var(--accent); color: #fff;
+    font-size: 11px; font-family: var(--mono);
+    padding: 2px 8px; border-radius: 4px;
+  }
+  input[type=range] {
+    -webkit-appearance: none; width: 100%; height: 4px;
+    background: var(--surface2); border-radius: 2px; outline: none;
+    border: 1px solid var(--border);
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 16px; height: 16px;
+    border-radius: 50%; background: var(--accent); cursor: pointer;
+  }
+  select.param-select {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 6px; color: var(--text); font-family: var(--sans);
+    font-size: 13px; padding: 9px 12px; outline: none; width: 100%;
+    -webkit-appearance: none;
+  }
+  .preview-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px;
+  }
+  .preview-chip {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px 16px;
+  }
+  .preview-chip .pc-label {
+    font-size: 10px; font-family: var(--mono); color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px;
+  }
+  .preview-chip .pc-val {
+    font-size: 22px; font-family: var(--mono); color: var(--accent2); font-weight: 300;
+  }
+  .preview-chip .pc-note { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  svg.chart { width: 100%; overflow: visible; }
+  .exp-charts { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .exp-results { display: none; }
+  .exp-results.visible { display: block; animation: fadeIn .3s ease; }
+  .comp-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 0; border-bottom: 1px solid var(--border);
+  }
+  .comp-row:last-child { border-bottom: none; }
+  .comp-name { font-size: 13px; color: var(--text); width: 160px; flex-shrink: 0; }
+  .comp-name.main { color: var(--accent2); font-weight: 500; }
+  .comp-bars { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+  .comp-bar-wrap { display: flex; align-items: center; gap: 8px; }
+  .comp-bar-label { font-size: 10px; color: var(--muted); font-family: var(--mono); width: 32px; }
+  .comp-bar-bg { flex: 1; height: 5px; background: var(--surface2); border-radius: 2px; }
+  .comp-bar-fill { height: 5px; border-radius: 2px; transition: width .6s ease; }
+  .comp-bar-pct { font-size: 11px; font-family: var(--mono); color: var(--text); width: 40px; text-align: right; }
+  .detail-metrics {
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-top: 16px;
+  }
+  .detail-chip {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px;
+    text-align: center;
+  }
+  .detail-chip .dc-label {
+    font-size: 10px; font-family: var(--mono); color: var(--muted);
+    text-transform: uppercase; margin-bottom: 4px;
+  }
+  .detail-chip .dc-val { font-size: 18px; font-family: var(--mono); font-weight: 500; }
+  .note-banner {
+    background: rgba(37,99,235,0.08); border: 1px solid rgba(37,99,235,0.2);
+    border-radius: 8px; padding: 10px 14px; font-size: 12px;
+    color: var(--muted); font-family: var(--mono); margin-bottom: 16px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="logo-block">
+      <h1>Crédito<span>ML</span></h1>
+      <p>Roboadvisor crediticio · German Credit Dataset</p>
+    </div>
+    <div class="badge-uc">UC Chile · Fintech · 2025</div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('train')">
+      <span class="dot"></span> Entrenar modelo
+    </button>
+    <button class="tab-btn" onclick="switchTab('experiment')">
+      <span class="dot"></span> Experimentos
+    </button>
+    <button class="tab-btn" id="predict-tab-btn" onclick="switchTab('predict')">
+      <span class="dot"></span> Evaluar solicitud
+    </button>
+  </div>
+
+  <!-- STATUS BAR -->
+  <div class="status-bar">
+    <div class="status-dot" id="status-dot"></div>
+    <span id="status-text">Modelo no entrenado — ve a "Entrenar modelo" para comenzar</span>
+  </div>
+
+  <!-- ===== TRAIN PANEL ===== -->
+  <div class="panel active" id="panel-train">
+
+    <div class="card">
+      <div class="card-title">Dataset</div>
+      <div class="train-info">
+        <div class="info-chip">
+          <div class="label">Fuente</div>
+          <div class="val accent" style="font-size:13px;font-family:var(--mono);">UCI Repository</div>
+        </div>
+        <div class="info-chip">
+          <div class="label">Registros</div>
+          <div class="val">1.000</div>
+        </div>
+        <div class="info-chip">
+          <div class="label">Variables</div>
+          <div class="val">20</div>
+        </div>
+      </div>
+      <p style="font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:20px;">
+        El dataset <em>Statlog German Credit</em> (Hofmann, 1994) contiene información de 1.000 solicitantes
+        de crédito en Alemania. Cada registro incluye variables financieras, demográficas y de comportamiento
+        crediticio. La variable objetivo clasifica a cada solicitante como <strong style="color:var(--green)">buen riesgo</strong>
+        (700 casos) o <strong style="color:var(--red)">mal riesgo</strong> (300 casos).
+        El modelo Random Forest se entrenará con un 80% de los datos y será evaluado con el 20% restante.
+      </p>
+      <button class="btn btn-primary" id="train-btn" onclick="trainModel()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Descargar datos y entrenar
+      </button>
+      <div id="train-error"></div>
+    </div>
+
+    <!-- Results -->
+    <div id="train-results" style="display:none;">
+
+      <div class="card">
+        <div class="card-title">Métricas de desempeño</div>
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="m-label">Exactitud (Accuracy)</div>
+            <div class="m-val" id="m-accuracy">—</div>
+          </div>
+          <div class="metric-card">
+            <div class="m-label">AUC-ROC</div>
+            <div class="m-val" id="m-auc">—</div>
+          </div>
+          <div class="metric-card" style="grid-column:1/-1;">
+            <div class="m-label">Muestras — entrenamiento / prueba</div>
+            <div style="display:flex;gap:24px;margin-top:6px;">
+              <div>
+                <div style="font-size:11px;color:var(--muted);font-family:var(--mono);">Train</div>
+                <div class="m-val" style="font-size:22px;" id="m-train">—</div>
+              </div>
+              <div>
+                <div style="font-size:11px;color:var(--muted);font-family:var(--mono);">Test</div>
+                <div class="m-val" style="font-size:22px;" id="m-test">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Matriz de confusión</div>
+        <div class="cm-wrap">
+          <table class="cm-table">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Predicho: Aprobado</th>
+                <th>Predicho: Rechazado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th style="text-align:left;padding:8px 14px;color:var(--muted);font-size:11px;">Real: Aprobado</th>
+                <td class="cm-tn" id="cm-tn">—</td>
+                <td class="cm-fp" id="cm-fp">—</td>
+              </tr>
+              <tr>
+                <th style="text-align:left;padding:8px 14px;color:var(--muted);font-size:11px;">Real: Rechazado</th>
+                <td class="cm-fn" id="cm-fn">—</td>
+                <td class="cm-tp" id="cm-tp">—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:11px;color:var(--muted);margin-top:12px;font-family:var(--mono);line-height:1.6;">
+          TN = correctamente aprobados · FP = aprobados mal clasificados · FN = rechazados mal clasificados · TP = correctamente rechazados
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Variables más relevantes (top 10)</div>
+        <div id="feat-importance"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== EXPERIMENT PANEL ===== -->
+  <div class="panel" id="panel-experiment">
+
+    <!-- Parámetros -->
+    <div class="card">
+      <div class="card-title">Parámetros del modelo</div>
+      <div class="note-banner">⚡ Las gráficas de previsualización se actualizan en tiempo real. Al hacer clic en "Entrenar con estos parámetros" el modelo real se entrena en Vercel con los datos de UCI.</div>
+      <div class="param-grid">
+
+        <div class="param-group">
+          <label>N° de árboles (n_estimators) <span class="param-val" id="pv-trees">100</span></label>
+          <input type="range" id="p-trees" min="10" max="200" step="10" value="100"
+            oninput="document.getElementById('pv-trees').textContent=this.value; updatePreviews()">
+        </div>
+
+        <div class="param-group">
+          <label>Profundidad máxima (max_depth) <span class="param-val" id="pv-depth">8</span></label>
+          <input type="range" id="p-depth" min="2" max="15" step="1" value="8"
+            oninput="document.getElementById('pv-depth').textContent=this.value; updatePreviews()">
+          <div style="font-size:11px;color:var(--muted);font-family:var(--mono);">desliza a 15 = sin límite</div>
+        </div>
+
+        <div class="param-group">
+          <label>Tamaño del test set (%) <span class="param-val" id="pv-test">20%</span></label>
+          <input type="range" id="p-test" min="10" max="40" step="5" value="20"
+            oninput="document.getElementById('pv-test').textContent=this.value+'%'; updatePreviews()">
+        </div>
+
+        <div class="param-group">
+          <label>Peso de clases (class_weight)</label>
+          <select class="param-select" id="p-weight" onchange="updatePreviews()">
+            <option value="balanced">balanced — compensa desbalance 70/30</option>
+            <option value="none">none — sin ajuste de pesos</option>
+          </select>
+        </div>
+
+      </div>
+
+      <!-- Preview chips -->
+      <div class="preview-grid" id="preview-chips">
+        <div class="preview-chip">
+          <div class="pc-label">Accuracy estimado</div>
+          <div class="pc-val" id="prev-acc">~75%</div>
+          <div class="pc-note">Previsualización</div>
+        </div>
+        <div class="preview-chip">
+          <div class="pc-label">AUC-ROC estimado</div>
+          <div class="pc-val" id="prev-auc">~79%</div>
+          <div class="pc-note">Previsualización</div>
+        </div>
+        <div class="preview-chip">
+          <div class="pc-label">Muestras de entrenamiento</div>
+          <div class="pc-val" id="prev-train">800</div>
+          <div class="pc-note">Con test = 20%</div>
+        </div>
+        <div class="preview-chip">
+          <div class="pc-label">Muestras de prueba</div>
+          <div class="pc-val" id="prev-test">200</div>
+          <div class="pc-note">Con test = 20%</div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="exp-btn" onclick="runExperiment()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
+        Entrenar con estos parámetros
+      </button>
+      <div id="exp-error"></div>
+    </div>
+
+    <!-- Gráficas preview (tiempo real) -->
+    <div class="exp-charts">
+
+      <!-- Curva de aprendizaje -->
+      <div class="card">
+        <div class="card-title">Curva de aprendizaje</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:12px;font-family:var(--mono);">Accuracy estimado vs n_estimators</div>
+        <svg class="chart" id="chart-learning" height="160" viewBox="0 0 300 160"></svg>
+      </div>
+
+      <!-- Curva ROC preview -->
+      <div class="card">
+        <div class="card-title">Curva ROC</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:12px;font-family:var(--mono);">Previsualización · AUC estimado</div>
+        <svg class="chart" id="chart-roc" height="160" viewBox="0 0 300 160"></svg>
+      </div>
+
+    </div>
+
+    <!-- Resultados reales (post-entrenamiento) -->
+    <div class="exp-results" id="exp-results">
+
+      <div class="card">
+        <div class="card-title">Resultados reales del modelo entrenado</div>
+
+        <!-- Métricas principales -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="m-label">Exactitud (Accuracy)</div>
+            <div class="m-val" id="exp-accuracy">—</div>
+          </div>
+          <div class="metric-card">
+            <div class="m-label">AUC-ROC</div>
+            <div class="m-val" id="exp-auc">—</div>
+          </div>
+        </div>
+
+        <!-- Métricas detalladas -->
+        <div class="detail-metrics">
+          <div class="detail-chip">
+            <div class="dc-label">Precision Aprobados</div>
+            <div class="dc-val" id="exp-prec-app" style="color:var(--green)">—</div>
+          </div>
+          <div class="detail-chip">
+            <div class="dc-label">Recall Aprobados</div>
+            <div class="dc-val" id="exp-rec-app" style="color:var(--green)">—</div>
+          </div>
+          <div class="detail-chip">
+            <div class="dc-label">F1 Aprobados</div>
+            <div class="dc-val" id="exp-f1-app" style="color:var(--green)">—</div>
+          </div>
+          <div class="detail-chip">
+            <div class="dc-label">Precision Rechazados</div>
+            <div class="dc-val" id="exp-prec-rej" style="color:var(--red)">—</div>
+          </div>
+          <div class="detail-chip">
+            <div class="dc-label">Recall Rechazados</div>
+            <div class="dc-val" id="exp-rec-rej" style="color:var(--red)">—</div>
+          </div>
+          <div class="detail-chip">
+            <div class="dc-label">F1 Rechazados</div>
+            <div class="dc-val" id="exp-f1-rej" style="color:var(--red)">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Matriz de confusión -->
+      <div class="card">
+        <div class="card-title">Matriz de confusión</div>
+        <div class="cm-wrap">
+          <table class="cm-table">
+            <thead><tr>
+              <th></th>
+              <th>Predicho: Aprobado</th>
+              <th>Predicho: Rechazado</th>
+            </tr></thead>
+            <tbody>
+              <tr>
+                <th style="text-align:left;padding:8px 14px;color:var(--muted);font-size:11px;">Real: Aprobado</th>
+                <td class="cm-tn" id="exp-cm-tn">—</td>
+                <td class="cm-fp" id="exp-cm-fp">—</td>
+              </tr>
+              <tr>
+                <th style="text-align:left;padding:8px 14px;color:var(--muted);font-size:11px;">Real: Rechazado</th>
+                <td class="cm-fn" id="exp-cm-fn">—</td>
+                <td class="cm-tp" id="exp-cm-tp">—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Curva ROC real -->
+      <div class="card">
+        <div class="card-title">Curva ROC real</div>
+        <svg class="chart" id="chart-roc-real" height="200" viewBox="0 0 400 200"></svg>
+      </div>
+
+      <!-- Comparación de modelos -->
+      <div class="card">
+        <div class="card-title">Comparación de modelos</div>
+        <div id="model-comparison"></div>
+      </div>
+
+      <!-- Feature importance real -->
+      <div class="card">
+        <div class="card-title">Importancia de variables (con estos parámetros)</div>
+        <div id="exp-feat-importance"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== PREDICT PANEL ===== -->
+  <div class="panel" id="panel-predict">
+
+    <div class="card">
+      <div class="card-title">Datos del solicitante</div>
+      <div class="form-grid" id="predict-form">
+
+        <div class="form-group">
+          <label>Duración del crédito (meses)</label>
+          <input type="number" id="f-duration" value="12" min="1" max="72">
+        </div>
+        <div class="form-group">
+          <label>Monto del crédito (DM)</label>
+          <input type="number" id="f-credit_amount" value="2000" min="100" max="20000">
+        </div>
+        <div class="form-group">
+          <label>Edad (años)</label>
+          <input type="number" id="f-age" value="30" min="18" max="80">
+        </div>
+        <div class="form-group">
+          <label>Tasa de cuota (% ingreso)</label>
+          <input type="number" id="f-installment_rate" value="2" min="1" max="4">
+        </div>
+        <div class="form-group">
+          <label>Cuenta corriente</label>
+          <select id="f-checking_account">
+            <option value="A14">Sin cuenta corriente</option>
+            <option value="A11">&lt; 0 DM (negativo)</option>
+            <option value="A12">0–200 DM</option>
+            <option value="A13">&gt; 200 DM / con salario</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Historial crediticio</label>
+          <select id="f-credit_history">
+            <option value="A32">Créditos existentes al día</option>
+            <option value="A30">Sin créditos / todos pagados</option>
+            <option value="A31">Todos pagados en este banco</option>
+            <option value="A33">Retrasos en el pasado</option>
+            <option value="A34">Cuenta crítica / otros bancos</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Propósito del crédito</label>
+          <select id="f-purpose">
+            <option value="A43">Radio / televisión</option>
+            <option value="A40">Auto (nuevo)</option>
+            <option value="A41">Auto (usado)</option>
+            <option value="A42">Muebles / equipos</option>
+            <option value="A46">Educación</option>
+            <option value="A49">Negocios</option>
+            <option value="A410">Otros</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Cuenta de ahorro</label>
+          <select id="f-savings_account">
+            <option value="A61">&lt; 100 DM</option>
+            <option value="A62">100–500 DM</option>
+            <option value="A63">500–1000 DM</option>
+            <option value="A64">&gt; 1000 DM</option>
+            <option value="A65">Desconocido / sin ahorro</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Tiempo de empleo actual</label>
+          <select id="f-employment">
+            <option value="A73">1–4 años</option>
+            <option value="A71">Desempleado</option>
+            <option value="A72">&lt; 1 año</option>
+            <option value="A74">4–7 años</option>
+            <option value="A75">&gt; 7 años</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Estado civil / sexo</label>
+          <select id="f-personal_status">
+            <option value="A93">Hombre soltero</option>
+            <option value="A91">Hombre divorciado</option>
+            <option value="A92">Mujer divorciada / casada</option>
+            <option value="A94">Hombre casado / viudo</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Otros deudores / garantes</label>
+          <select id="f-other_debtors">
+            <option value="A101">Ninguno</option>
+            <option value="A102">Co-solicitante</option>
+            <option value="A103">Garante</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Años en residencia actual</label>
+          <input type="number" id="f-residence_since" value="2" min="1" max="4">
+        </div>
+        <div class="form-group">
+          <label>Propiedad más valiosa</label>
+          <select id="f-property">
+            <option value="A121">Bien raíz</option>
+            <option value="A122">Seguro de vida / ahorro</option>
+            <option value="A123">Auto u otros bienes</option>
+            <option value="A124">Sin propiedad</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Otros planes de cuotas</label>
+          <select id="f-other_installments">
+            <option value="A143">Ninguno</option>
+            <option value="A141">Banco</option>
+            <option value="A142">Tiendas</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Tipo de vivienda</label>
+          <select id="f-housing">
+            <option value="A152">Propiedad propia</option>
+            <option value="A151">Arriendo</option>
+            <option value="A153">Gratuita</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Créditos existentes en este banco</label>
+          <input type="number" id="f-existing_credits" value="1" min="1" max="4">
+        </div>
+        <div class="form-group">
+          <label>Tipo de trabajo</label>
+          <select id="f-job">
+            <option value="A173">Empleado calificado / funcionario</option>
+            <option value="A171">Desempleado / no calificado</option>
+            <option value="A172">No calificado residente</option>
+            <option value="A174">Alta dirección / independiente</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Personas a cargo</label>
+          <input type="number" id="f-dependents" value="1" min="1" max="2">
+        </div>
+        <div class="form-group">
+          <label>Teléfono registrado</label>
+          <select id="f-telephone">
+            <option value="A192">Sí</option>
+            <option value="A191">No</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Trabajador extranjero</label>
+          <select id="f-foreign_worker">
+            <option value="A201">Sí</option>
+            <option value="A202">No</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-top:24px;">
+        <button class="btn btn-primary" id="predict-btn" onclick="runPredict()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+          Evaluar solicitud
+        </button>
+        <div id="predict-error"></div>
+      </div>
+    </div>
+
+    <div id="predict-result"></div>
+
+  </div>
+
+  <footer>CréditoML · Trabajo Final Fintech · UC Chile · Dataset: Hofmann (1994) Statlog German Credit · CC BY 4.0</footer>
+
+</div>
+
+<script>
+  let modelB64 = null;
+
+  function switchTab(tab) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('panel-' + tab).classList.add('active');
+    event.currentTarget.classList.add('active');
+  }
+
+  function setStatus(state, msg) {
+    const dot = document.getElementById('status-dot');
+    const txt = document.getElementById('status-text');
+    dot.className = 'status-dot ' + state;
+    txt.textContent = msg;
+  }
+
+  async function trainModel() {
+    const btn = document.getElementById('train-btn');
+    const errDiv = document.getElementById('train-error');
+    errDiv.innerHTML = '';
+    btn.disabled = true;
+    btn.innerHTML = '<span class="loader"></span> Descargando datos y entrenando…';
+    setStatus('loading', 'Conectando con UCI Repository y entrenando Random Forest…');
+
+    try {
+      const res = await fetch('/api/train', { method: 'POST' });
+      const data = await res.json();
+
+      if (!data.success) throw new Error(data.error);
+
+      modelB64 = data.model_b64;
+      const m = data.metrics;
+
+      // Fill metrics
+      document.getElementById('m-accuracy').textContent = (m.accuracy * 100).toFixed(1) + '%';
+      document.getElementById('m-auc').textContent = (m.auc_roc * 100).toFixed(1) + '%';
+      document.getElementById('m-train').textContent = m.train_samples;
+      document.getElementById('m-test').textContent = m.test_samples;
+
+      // Confusion matrix — cm[0]=good row, cm[1]=bad row
+      const cm = m.confusion_matrix;
+      document.getElementById('cm-tn').textContent = cm[0][0];
+      document.getElementById('cm-fp').textContent = cm[0][1];
+      document.getElementById('cm-fn').textContent = cm[1][0];
+      document.getElementById('cm-tp').textContent = cm[1][1];
+
+      // Feature importance bars
+      const feats = m.top_features;
+      const maxImp = feats[0].importance;
+      const container = document.getElementById('feat-importance');
+      container.innerHTML = feats.map(f => `
+        <div class="feat-row">
+          <div class="feat-name">${f.feature}</div>
+          <div class="feat-bar-bg">
+            <div class="feat-bar-fill" style="width:${(f.importance/maxImp*100).toFixed(1)}%"></div>
+          </div>
+          <div class="feat-pct">${(f.importance*100).toFixed(1)}%</div>
+        </div>
+      `).join('');
+
+      document.getElementById('train-results').style.display = 'block';
+      setStatus('trained', `Modelo entrenado · Accuracy ${(m.accuracy*100).toFixed(1)}% · AUC-ROC ${(m.auc_roc*100).toFixed(1)}% · Listo para evaluar solicitudes`);
+      btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> Modelo entrenado — reentrenar';
+      btn.disabled = false;
+
+    } catch (err) {
+      errDiv.innerHTML = `<div class="error-msg">Error: ${err.message}</div>`;
+      setStatus('', 'Error al entrenar — revisa la consola');
+      btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> Reintentar';
+      btn.disabled = false;
+    }
+  }
+
+  async function runPredict() {
+    if (!modelB64) {
+      document.getElementById('predict-error').innerHTML =
+        '<div class="error-msg">Primero debes entrenar el modelo en la pestaña "Entrenar modelo"</div>';
+      return;
+    }
+
+    const btn = document.getElementById('predict-btn');
+    const errDiv = document.getElementById('predict-error');
+    errDiv.innerHTML = '';
+    btn.disabled = true;
+    btn.innerHTML = '<span class="loader"></span> Evaluando…';
+
+    const fields = [
+      'checking_account','duration','credit_history','purpose','credit_amount',
+      'savings_account','employment','installment_rate','personal_status',
+      'other_debtors','residence_since','property','age','other_installments',
+      'housing','existing_credits','job','dependents','telephone','foreign_worker'
+    ];
+
+    const applicant = {};
+    fields.forEach(f => {
+      const el = document.getElementById('f-' + f);
+      applicant[f] = el ? el.value : '';
+    });
+
+    try {
+      const res = await fetch('/api/predict', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model_b64: modelB64, applicant })
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error);
+
+      const approved = data.decision === 'APROBADO';
+      const cls = approved ? 'approved' : 'rejected';
+      const emoji = approved ? '✓' : '✗';
+
+      document.getElementById('predict-result').innerHTML = `
+        <div class="result-card ${cls}">
+          <div class="result-verdict">${emoji} ${data.decision}</div>
+          <div class="result-conf">Confianza del modelo: ${data.confidence}%</div>
+          <div class="prob-row">
+            <div class="prob-item green">
+              <div class="pi-label">P(Aprobado)</div>
+              <div class="pi-val">${data.prob_approved}%</div>
+            </div>
+            <div class="prob-item red">
+              <div class="pi-label">P(Rechazado)</div>
+              <div class="pi-val">${data.prob_rejected}%</div>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:16px;">
+          <div class="card-title">Factores más influyentes en esta decisión</div>
+          ${data.top_factors.map(f => `
+            <div class="feat-row">
+              <div class="feat-name">${f.feature}</div>
+              <div class="feat-bar-bg">
+                <div class="feat-bar-fill" style="width:${(f.importance / data.top_factors[0].importance * 100).toFixed(1)}%"></div>
+              </div>
+              <div class="feat-pct">${(f.importance*100).toFixed(1)}%</div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+
+    } catch (err) {
+      errDiv.innerHTML = `<div class="error-msg">Error: ${err.message}</div>`;
+    }
+
+    btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> Evaluar solicitud';
+    btn.disabled = false;
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  // EXPERIMENTS
+  // ═══════════════════════════════════════════════════════════
+
+  // Approximate accuracy model based on known RF behavior
+  function estimateMetrics(trees, depth, testPct, weight) {
+    // Base accuracy ~75.5% with default params
+    let acc = 0.755;
+    // More trees help up to ~100, then plateau
+    acc += Math.min(trees / 100, 1.0) * 0.025 - 0.025;
+    // Deeper trees can overfit slightly, optimal ~6-10
+    const depthEff = depth === 15 ? 12 : depth;
+    if (depthEff < 5) acc -= (5 - depthEff) * 0.015;
+    if (depthEff > 10) acc -= (depthEff - 10) * 0.005;
+    // class_weight balanced helps with minority class recall
+    if (weight === 'none') acc += 0.01; // slightly higher acc but worse on minority
+    // Larger test set = noisier estimate
+    acc += (0.2 - testPct / 100) * 0.02;
+    acc = Math.max(0.68, Math.min(0.83, acc));
+    const auc = acc + 0.04 + Math.random() * 0.001;
+    return { acc: Math.round(acc * 1000) / 10, auc: Math.round(Math.min(auc, 0.88) * 1000) / 10 };
+  }
+
+  function updatePreviews() {
+    const trees   = parseInt(document.getElementById('p-trees').value);
+    const depth   = parseInt(document.getElementById('p-depth').value);
+    const testPct = parseInt(document.getElementById('p-test').value);
+    const weight  = document.getElementById('p-weight').value;
+    const n       = 1000;
+    const trainN  = Math.round(n * (1 - testPct / 100));
+    const testN   = n - trainN;
+    const m       = estimateMetrics(trees, depth, testPct, weight);
+
+    document.getElementById('prev-acc').textContent   = '~' + m.acc + '%';
+    document.getElementById('prev-auc').textContent   = '~' + m.auc + '%';
+    document.getElementById('prev-train').textContent = trainN;
+    document.getElementById('prev-test').textContent  = testN;
+
+    drawLearningCurve(trees, depth, weight);
+    drawRocPreview(m.auc);
+  }
+
+  function drawLearningCurve(currentTrees, depth, weight) {
+    const svg = document.getElementById('chart-learning');
+    const W = 300, H = 160, pad = { t: 10, r: 10, b: 30, l: 38 };
+    const iW = W - pad.l - pad.r, iH = H - pad.t - pad.b;
+    const treeVals = [10,20,30,40,50,60,70,80,90,100,120,150,200];
+
+    const points = treeVals.map(t => {
+      const m = estimateMetrics(t, depth, 20, weight);
+      return { t, acc: m.acc };
+    });
+
+    const minAcc = 68, maxAcc = 83;
+    const xScale = t => pad.l + ((t - 10) / (200 - 10)) * iW;
+    const yScale = a => pad.t + iH - ((a - minAcc) / (maxAcc - minAcc)) * iH;
+
+    let html = '';
+    // Grid lines
+    [70, 74, 78, 82].forEach(a => {
+      const y = yScale(a);
+      html += `<line x1="${pad.l}" y1="${y}" x2="${pad.l+iW}" y2="${y}" stroke="#1e2d45" stroke-width="1"/>`;
+      html += `<text x="${pad.l-4}" y="${y+4}" font-size="9" fill="#64748b" text-anchor="end" font-family="DM Mono,monospace">${a}%</text>`;
+    });
+    // X axis labels
+    [10,50,100,150,200].forEach(t => {
+      html += `<text x="${xScale(t)}" y="${pad.t+iH+16}" font-size="9" fill="#64748b" text-anchor="middle" font-family="DM Mono,monospace">${t}</text>`;
+    });
+    // Line
+    const pathD = points.map((p,i) => `${i===0?'M':'L'}${xScale(p.t).toFixed(1)},${yScale(p.acc).toFixed(1)}`).join(' ');
+    html += `<path d="${pathD}" fill="none" stroke="#3b82f6" stroke-width="2"/>`;
+    // Fill area under curve
+    const areaD = pathD + ` L${xScale(200)},${pad.t+iH} L${xScale(10)},${pad.t+iH} Z`;
+    html += `<path d="${areaD}" fill="rgba(59,130,246,0.1)"/>`;
+    // Current value marker
+    const cx = xScale(currentTrees);
+    const cyVal = estimateMetrics(currentTrees, depth, 20, weight).acc;
+    const cy = yScale(cyVal);
+    html += `<line x1="${cx}" y1="${pad.t}" x2="${cx}" y2="${pad.t+iH}" stroke="#f59e0b" stroke-width="1" stroke-dasharray="3,2"/>`;
+    html += `<circle cx="${cx}" cy="${cy}" r="4" fill="#f59e0b"/>`;
+    html += `<text x="${cx+6}" y="${cy-5}" font-size="9" fill="#f59e0b" font-family="DM Mono,monospace">${cyVal}%</text>`;
+    // Axes
+    html += `<line x1="${pad.l}" y1="${pad.t}" x2="${pad.l}" y2="${pad.t+iH}" stroke="#334155" stroke-width="1"/>`;
+    html += `<line x1="${pad.l}" y1="${pad.t+iH}" x2="${pad.l+iW}" y2="${pad.t+iH}" stroke="#334155" stroke-width="1"/>`;
+
+    svg.innerHTML = html;
+  }
+
+  function drawRocPreview(aucVal) {
+    const svg = document.getElementById('chart-roc');
+    const W = 300, H = 160, pad = { t: 10, r: 10, b: 30, l: 38 };
+    const iW = W - pad.l - pad.r, iH = H - pad.t - pad.b;
+    const xS = v => pad.l + v * iW;
+    const yS = v => pad.t + iH - v * iH;
+
+    // Generate approximate ROC curve from AUC
+    const aucDecimal = aucVal / 100;
+    const pts = [];
+    for (let i = 0; i <= 20; i++) {
+      const fpr = i / 20;
+      const tpr = Math.pow(fpr, Math.pow(1 - aucDecimal, 1.5));
+      pts.push({ fpr, tpr: Math.min(tpr + (1 - Math.pow(fpr, 0.5)) * (aucDecimal - 0.5) * 0.8, 1) });
+    }
+    pts.unshift({ fpr: 0, tpr: 0 });
+    pts.push({ fpr: 1, tpr: 1 });
+
+    let html = '';
+    // Grid
+    [0, 0.25, 0.5, 0.75, 1].forEach(v => {
+      html += `<line x1="${xS(v)}" y1="${pad.t}" x2="${xS(v)}" y2="${pad.t+iH}" stroke="#1e2d45" stroke-width="1"/>`;
+      html += `<line x1="${pad.l}" y1="${yS(v)}" x2="${pad.l+iW}" y2="${yS(v)}" stroke="#1e2d45" stroke-width="1"/>`;
+    });
+    // Diagonal random classifier
+    html += `<line x1="${xS(0)}" y1="${yS(0)}" x2="${xS(1)}" y2="${yS(1)}" stroke="#334155" stroke-width="1" stroke-dasharray="4,3"/>`;
+    // ROC curve
+    const pathD = pts.map((p,i) => `${i===0?'M':'L'}${xS(p.fpr).toFixed(1)},${yS(p.tpr).toFixed(1)}`).join(' ');
+    const areaD = pathD + ` L${xS(1)},${yS(0)} L${xS(0)},${yS(0)} Z`;
+    html += `<path d="${areaD}" fill="rgba(16,185,129,0.1)"/>`;
+    html += `<path d="${pathD}" fill="none" stroke="#10b981" stroke-width="2"/>`;
+    // AUC label
+    html += `<text x="${pad.l + iW*0.55}" y="${pad.t + iH*0.35}" font-size="10" fill="#10b981" font-family="DM Mono,monospace">AUC ≈ ${aucVal}%</text>`;
+    // Axes labels
+    html += `<text x="${pad.l + iW/2}" y="${pad.t+iH+22}" font-size="9" fill="#64748b" text-anchor="middle" font-family="DM Mono,monospace">FPR (Tasa falsos positivos)</text>`;
+    html += `<text x="${pad.l - 28}" y="${pad.t + iH/2}" font-size="9" fill="#64748b" text-anchor="middle" font-family="DM Mono,monospace" transform="rotate(-90,${pad.l-28},${pad.t+iH/2})">TPR</text>`;
+    // Axes
+    html += `<line x1="${pad.l}" y1="${pad.t}" x2="${pad.l}" y2="${pad.t+iH}" stroke="#334155" stroke-width="1"/>`;
+    html += `<line x1="${pad.l}" y1="${pad.t+iH}" x2="${pad.l+iW}" y2="${pad.t+iH}" stroke="#334155" stroke-width="1"/>`;
+
+    svg.innerHTML = html;
+  }
+
+  function drawRocReal(rocPoints) {
+    const svg = document.getElementById('chart-roc-real');
+    const W = 400, H = 200, pad = { t: 10, r: 20, b: 35, l: 45 };
+    const iW = W - pad.l - pad.r, iH = H - pad.t - pad.b;
+    const xS = v => pad.l + v * iW;
+    const yS = v => pad.t + iH - v * iH;
+
+    let html = '';
+    [0, 0.25, 0.5, 0.75, 1].forEach(v => {
+      html += `<line x1="${xS(v)}" y1="${pad.t}" x2="${xS(v)}" y2="${pad.t+iH}" stroke="#1e2d45" stroke-width="1"/>`;
+      html += `<line x1="${pad.l}" y1="${yS(v)}" x2="${pad.l+iW}" y2="${yS(v)}" stroke="#1e2d45" stroke-width="1"/>`;
+      html += `<text x="${xS(v)}" y="${pad.t+iH+18}" font-size="9" fill="#64748b" text-anchor="middle" font-family="DM Mono,monospace">${v}</text>`;
+      html += `<text x="${pad.l-6}" y="${yS(v)+4}" font-size="9" fill="#64748b" text-anchor="end" font-family="DM Mono,monospace">${v}</text>`;
+    });
+    // Diagonal
+    html += `<line x1="${xS(0)}" y1="${yS(0)}" x2="${xS(1)}" y2="${yS(1)}" stroke="#334155" stroke-width="1" stroke-dasharray="4,3"/>`;
+    // Real curve
+    const pathD = rocPoints.map((p,i) => `${i===0?'M':'L'}${xS(p.fpr).toFixed(1)},${yS(p.tpr).toFixed(1)}`).join(' ');
+    const areaD = pathD + ` L${xS(1)},${yS(0)} L${xS(0)},${yS(0)} Z`;
+    html += `<path d="${areaD}" fill="rgba(16,185,129,0.1)"/>`;
+    html += `<path d="${pathD}" fill="none" stroke="#10b981" stroke-width="2"/>`;
+    // Axes labels
+    html += `<text x="${pad.l+iW/2}" y="${pad.t+iH+30}" font-size="10" fill="#64748b" text-anchor="middle" font-family="DM Mono,monospace">Tasa de falsos positivos (FPR)</text>`;
+    html += `<text x="${pad.l-35}" y="${pad.t+iH/2}" font-size="10" fill="#64748b" text-anchor="middle" font-family="DM Mono,monospace" transform="rotate(-90,${pad.l-35},${pad.t+iH/2})">Tasa verdaderos positivos (TPR)</text>`;
+    html += `<line x1="${pad.l}" y1="${pad.t}" x2="${pad.l}" y2="${pad.t+iH}" stroke="#334155" stroke-width="1"/>`;
+    html += `<line x1="${pad.l}" y1="${pad.t+iH}" x2="${pad.l+iW}" y2="${pad.t+iH}" stroke="#334155" stroke-width="1"/>`;
+
+    svg.innerHTML = html;
+  }
+
+  async function runExperiment() {
+    const btn = document.getElementById('exp-btn');
+    const errDiv = document.getElementById('exp-error');
+    errDiv.innerHTML = '';
+    btn.disabled = true;
+    btn.innerHTML = '<span class="loader"></span> Entrenando en Vercel…';
+    setStatus('loading', 'Entrenando modelo experimental y comparando algoritmos…');
+
+    const trees   = parseInt(document.getElementById('p-trees').value);
+    const depth   = parseInt(document.getElementById('p-depth').value);
+    const testPct = parseInt(document.getElementById('p-test').value);
+    const weight  = document.getElementById('p-weight').value;
+
+    try {
+      const res = await fetch('/api/experiment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          n_estimators: trees,
+          max_depth: depth === 15 ? 'none' : depth,
+          test_size: testPct / 100,
+          class_weight: weight
+        })
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error);
+
+      // Save model globally so Evaluar tab can use it
+      modelB64 = data.model_b64;
+
+      const m = data.metrics;
+
+      // Main metrics
+      document.getElementById('exp-accuracy').textContent = (m.accuracy * 100).toFixed(1) + '%';
+      document.getElementById('exp-auc').textContent      = (m.auc_roc * 100).toFixed(1) + '%';
+
+      // Detail metrics
+      document.getElementById('exp-prec-app').textContent = (m.precision_approved * 100).toFixed(1) + '%';
+      document.getElementById('exp-rec-app').textContent  = (m.recall_approved    * 100).toFixed(1) + '%';
+      document.getElementById('exp-f1-app').textContent   = (m.f1_approved        * 100).toFixed(1) + '%';
+      document.getElementById('exp-prec-rej').textContent = (m.precision_rejected * 100).toFixed(1) + '%';
+      document.getElementById('exp-rec-rej').textContent  = (m.recall_rejected    * 100).toFixed(1) + '%';
+      document.getElementById('exp-f1-rej').textContent   = (m.f1_rejected        * 100).toFixed(1) + '%';
+
+      // Confusion matrix
+      const cm = m.confusion_matrix;
+      document.getElementById('exp-cm-tn').textContent = cm[0][0];
+      document.getElementById('exp-cm-fp').textContent = cm[0][1];
+      document.getElementById('exp-cm-fn').textContent = cm[1][0];
+      document.getElementById('exp-cm-tp').textContent = cm[1][1];
+
+      // Real ROC curve
+      drawRocReal(data.roc_curve);
+
+      // Model comparison bars
+      const maxAuc = Math.max(...data.comparison.map(c => c.auc));
+      document.getElementById('model-comparison').innerHTML = data.comparison.map(c => `
+        <div class="comp-row">
+          <div class="comp-name ${c.is_main ? 'main' : ''}">${c.name}${c.is_main ? ' ★' : ''}</div>
+          <div class="comp-bars">
+            <div class="comp-bar-wrap">
+              <span class="comp-bar-label">ACC</span>
+              <div class="comp-bar-bg"><div class="comp-bar-fill" style="width:${c.accuracy}%;background:#3b82f6"></div></div>
+              <span class="comp-bar-pct">${c.accuracy}%</span>
+            </div>
+            <div class="comp-bar-wrap">
+              <span class="comp-bar-label">AUC</span>
+              <div class="comp-bar-bg"><div class="comp-bar-fill" style="width:${c.auc}%;background:#10b981"></div></div>
+              <span class="comp-bar-pct">${c.auc}%</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      // Feature importance
+      const maxImp = data.top_features[0].importance;
+      document.getElementById('exp-feat-importance').innerHTML = data.top_features.map(f => `
+        <div class="feat-row">
+          <div class="feat-name">${f.feature}</div>
+          <div class="feat-bar-bg"><div class="feat-bar-fill" style="width:${(f.importance/maxImp*100).toFixed(1)}%"></div></div>
+          <div class="feat-pct">${(f.importance*100).toFixed(1)}%</div>
+        </div>
+      `).join('');
+
+      document.getElementById('exp-results').classList.add('visible');
+      setStatus('trained', `Experimento completo · Acc ${(m.accuracy*100).toFixed(1)}% · AUC ${(m.auc_roc*100).toFixed(1)}% · Modelo listo para evaluar solicitudes`);
+
+      btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> Re-experimentar';
+      btn.disabled = false;
+
+    } catch (err) {
+      errDiv.innerHTML = `<div class="error-msg">Error: ${err.message}</div>`;
+      setStatus('', 'Error en el experimento');
+      btn.innerHTML = 'Entrenar con estos parámetros';
+      btn.disabled = false;
+    }
+  }
+
+  // Init previews on load
+  document.addEventListener('DOMContentLoaded', () => {
+    updatePreviews();
+  });
+</script>
+</body>
+</html>
+
