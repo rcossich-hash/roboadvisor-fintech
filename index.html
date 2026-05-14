@@ -7,18 +7,18 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg:      #0a1628;
-    --surface: #102890;
-    --surface2: #183CC0;
-    --border:  #1d3a8a;
+    --bg:      #FAFAF8;
+    --surface: #FFFFFF;
+    --surface2: #F0F4FF;
+    --border:  #D1D9F0;
     --accent:  #1534B7;
-    --accent2: #4DD9E8;
-    --green:   #6EE7B7;
-    --red:     #F87171;
-    --amber:   #FBBF24;
-    --text:    #FFFFFF;
-    --muted:   #B0B8D0;
-    --subtle:  #707898;
+    --accent2: #1534B7;
+    --green:   #059669;
+    --red:     #DC2626;
+    --amber:   #D97706;
+    --text:    #1a2340;
+    --muted:   #5a6490;
+    --subtle:  #8890B0;
     --mono: 'Consolas', monospace;
     --serif: 'Noto Sans', sans-serif;
     --sans: 'Inter', 'Noto Sans', sans-serif;
@@ -41,8 +41,8 @@
     position: fixed;
     inset: 0;
     background-image:
-      linear-gradient(rgba(77,217,232,0.06) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(77,217,232,0.06) 1px, transparent 1px);
+      linear-gradient(rgba(21,52,183,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(21,52,183,0.05) 1px, transparent 1px);
     background-size: 40px 40px;
     opacity: 1;
     pointer-events: none;
@@ -72,10 +72,10 @@
     font-weight: 700;
     letter-spacing: -0.5px;
     line-height: 1;
-    color: #fff;
+    color: var(--accent);
   }
 
-  .logo-block h1 span { color: var(--accent2); font-style: normal; }
+  .logo-block h1 span { color: #4DD9E8; font-style: normal; }
 
   .logo-block p {
     margin-top: 6px;
@@ -88,11 +88,11 @@
 
   .badge-uc {
     background: var(--surface2);
-    border: 1px solid var(--accent2);
+    border: 1px solid var(--accent);
     border-radius: 8px;
     padding: 6px 14px;
     font-size: 11px;
-    color: var(--accent2);
+    color: var(--accent);
     font-family: var(--sans);
     white-space: nowrap;
     margin-top: 4px;
@@ -112,6 +112,7 @@
     padding: 4px;
     margin-bottom: 32px;
     width: fit-content;
+    box-shadow: 0 1px 4px rgba(21,52,183,0.08);
   }
 
   .tab-btn {
@@ -121,7 +122,7 @@
     font-family: var(--sans);
     font-size: 13px;
     font-weight: 500;
-    padding: 8px 20px;
+    padding: 8px 16px;
     border-radius: 7px;
     cursor: pointer;
     transition: all .2s;
@@ -131,13 +132,13 @@
   }
 
   .tab-btn.active {
-    background: var(--accent2);
-    color: #000;
+    background: var(--accent);
+    color: #fff;
   }
 
   .tab-btn:not(.active):hover {
     background: var(--surface2);
-    color: var(--text);
+    color: var(--accent);
   }
 
   .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
@@ -155,12 +156,13 @@
     border-radius: 12px;
     padding: 28px;
     margin-bottom: 20px;
+    box-shadow: 0 1px 6px rgba(21,52,183,0.06);
   }
 
   .card-title {
     font-family: var(--mono);
     font-size: 11px;
-    color: var(--accent2);
+    color: var(--accent);
     text-transform: uppercase;
     letter-spacing: 0.12em;
     margin-bottom: 20px;
@@ -173,8 +175,7 @@
     content: '';
     flex: 1;
     height: 1px;
-    background: var(--accent2);
-    opacity: 0.3;
+    background: var(--border);
   }
 
   /* Train section */
@@ -225,12 +226,12 @@
   }
 
   .btn-primary {
-    background: var(--accent2);
-    color: #000;
+    background: var(--accent);
+    color: #fff;
     font-weight: 600;
   }
 
-  .btn-primary:hover { background: #67E8F9; transform: translateY(-1px); }
+  .btn-primary:hover { background: #1a4fd8; transform: translateY(-1px); }
   .btn-primary:active { transform: none; }
   .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
@@ -273,9 +274,9 @@
 
   .metric-card .m-val {
     font-size: 28px;
-    font-weight: 300;
+    font-weight: 700;
     font-family: var(--mono);
-    color: var(--green);
+    color: var(--accent);
   }
 
   /* Confusion matrix */
@@ -291,7 +292,7 @@
   .cm-table th {
     padding: 8px 14px;
     color: var(--muted);
-    font-weight: 400;
+    font-weight: 500;
     font-size: 11px;
     text-align: center;
     letter-spacing: 0.08em;
@@ -302,13 +303,17 @@
     text-align: center;
     border: 1px solid var(--border);
     font-size: 20px;
-    font-weight: 500;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity .15s;
   }
 
-  .cm-tp { background: rgba(16,185,129,0.12); color: var(--green); }
-  .cm-tn { background: rgba(16,185,129,0.08); color: var(--green); }
-  .cm-fp { background: rgba(239,68,68,0.10); color: var(--red); }
-  .cm-fn { background: rgba(245,158,11,0.10); color: var(--amber); }
+  .cm-table td:hover { opacity: 0.85; }
+
+  .cm-tp { background: rgba(5,150,105,0.1); color: var(--green); }
+  .cm-tn { background: rgba(5,150,105,0.06); color: var(--green); }
+  .cm-fp { background: rgba(220,38,38,0.08); color: var(--red); }
+  .cm-fn { background: rgba(217,119,6,0.10); color: var(--amber); }
 
   /* Feature importance bars */
   .feat-row {
@@ -467,13 +472,14 @@
     align-items: center;
     gap: 10px;
     padding: 10px 16px;
-    background: var(--surface2);
+    background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 8px;
     margin-bottom: 20px;
     font-size: 12px;
     font-family: var(--mono);
     color: var(--muted);
+    box-shadow: 0 1px 4px rgba(21,52,183,0.06);
   }
 
   .status-dot {
@@ -652,14 +658,14 @@
   </header>
 
   <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('train')">
+    <button class="tab-btn active" onclick="switchTab('stats')">
+      <span class="dot"></span> Estadísticas dataset
+    </button>
+    <button class="tab-btn" onclick="switchTab('train')">
       <span class="dot"></span> Entrenar
     </button>
     <button class="tab-btn" onclick="switchTab('experiment')">
-      <span class="dot"></span> Experimentos
-    </button>
-    <button class="tab-btn" onclick="switchTab('stats')">
-      <span class="dot"></span> Estadísticas
+      <span class="dot"></span> Configurar modelo
     </button>
     <button class="tab-btn" id="predict-tab-btn" onclick="switchTab('predict')">
       <span class="dot"></span> Evaluar
@@ -676,7 +682,7 @@
   </div>
 
   <!-- ===== TRAIN PANEL ===== -->
-  <div class="panel active" id="panel-train">
+  <div class="panel" id="panel-train">
 
     <div class="card">
       <div class="card-title">Dataset</div>
@@ -740,31 +746,55 @@
 
       <div class="card">
         <div class="card-title">Matriz de confusión</div>
+
+        <!-- Threshold slider -->
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;">
+          <span style="font-size:11px;font-family:var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;white-space:nowrap;">Umbral de decisión</span>
+          <input type="range" id="threshold-slider" min="10" max="90" step="5" value="50"
+            oninput="document.getElementById('threshold-val').textContent=this.value+'%'; updateThreshold()"
+            style="flex:1;">
+          <span id="threshold-val" style="font-size:14px;font-family:var(--mono);color:var(--accent);font-weight:600;width:40px;text-align:right;">50%</span>
+          <span style="font-size:11px;color:var(--muted);font-family:var(--mono);">Si P(buen riesgo) ≥ umbral → APROBADO</span>
+        </div>
+
         <div class="cm-wrap">
-          <table class="cm-table">
+          <table class="cm-table" id="cm-main-table">
             <thead>
               <tr>
-                <th></th>
-                <th>Predicho: Aprobado</th>
-                <th>Predicho: Rechazado</th>
+                <th style="width:20px;"></th>
+                <th style="width:20px;"></th>
+                <th colspan="2" style="text-align:center;color:var(--accent);font-weight:600;font-size:12px;padding-bottom:4px;letter-spacing:0.06em;">MODELO DICE:</th>
+              </tr>
+              <tr>
+                <th style="width:20px;"></th>
+                <th style="width:20px;"></th>
+                <th style="color:var(--muted);font-size:11px;">Aprobado</th>
+                <th style="color:var(--muted);font-size:11px;">Rechazado</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <th style="text-align:left;padding:8px 14px;color:var(--muted);font-size:11px;">Real: Aprobado</th>
-                <td class="cm-tn" id="cm-tn">—</td>
-                <td class="cm-fp" id="cm-fp">—</td>
+                <td rowspan="2" style="background:none;border:none;padding:0;width:18px;cursor:default;">
+                  <div style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:11px;font-family:var(--mono);color:var(--accent);font-weight:600;letter-spacing:0.1em;text-transform:uppercase;white-space:nowrap;text-align:center;">REAL:</div>
+                </td>
+                <th style="text-align:right;padding:8px 12px;color:var(--muted);font-size:11px;font-weight:500;white-space:nowrap;">Buen pagador</th>
+                <td class="cm-tn" id="cm-tn" onclick="showCmTooltip('tn','cm-tooltip')">—</td>
+                <td class="cm-fp" id="cm-fp" onclick="showCmTooltip('fp','cm-tooltip')">—</td>
               </tr>
               <tr>
-                <th style="text-align:left;padding:8px 14px;color:var(--muted);font-size:11px;">Real: Rechazado</th>
-                <td class="cm-fn" id="cm-fn">—</td>
-                <td class="cm-tp" id="cm-tp">—</td>
+                <th style="text-align:right;padding:8px 12px;color:var(--muted);font-size:11px;font-weight:500;white-space:nowrap;">Mal pagador</th>
+                <td class="cm-fn" id="cm-fn" onclick="showCmTooltip('fn','cm-tooltip')">—</td>
+                <td class="cm-tp" id="cm-tp" onclick="showCmTooltip('tp','cm-tooltip')">—</td>
               </tr>
             </tbody>
           </table>
         </div>
+
+        <!-- Tooltip popup -->
+        <div id="cm-tooltip" style="display:none;margin-top:14px;padding:14px 18px;border-radius:8px;font-size:13px;line-height:1.6;border-left:4px solid var(--accent);background:var(--surface2);color:var(--text);"></div>
+
         <p style="font-size:11px;color:var(--muted);margin-top:12px;font-family:var(--mono);line-height:1.6;">
-          TN = correctamente aprobados · FP = aprobados mal clasificados · FN = rechazados mal clasificados · TP = correctamente rechazados
+          Haz clic en cualquier número para ver su interpretación financiera.
         </p>
       </div>
 
@@ -916,25 +946,36 @@
         <div class="card-title">Matriz de confusión</div>
         <div class="cm-wrap">
           <table class="cm-table">
-            <thead><tr>
-              <th></th>
-              <th>Predicho: Aprobado</th>
-              <th>Predicho: Rechazado</th>
-            </tr></thead>
-            <tbody>
+            <thead>
               <tr>
-                <th style="text-align:left;padding:8px 14px;color:var(--muted);font-size:11px;">Real: Aprobado</th>
-                <td class="cm-tn" id="exp-cm-tn">—</td>
-                <td class="cm-fp" id="exp-cm-fp">—</td>
+                <th style="width:20px;"></th><th style="width:20px;"></th>
+                <th colspan="2" style="text-align:center;color:var(--accent);font-weight:600;font-size:12px;padding-bottom:4px;letter-spacing:0.06em;">MODELO DICE:</th>
               </tr>
               <tr>
-                <th style="text-align:left;padding:8px 14px;color:var(--muted);font-size:11px;">Real: Rechazado</th>
-                <td class="cm-fn" id="exp-cm-fn">—</td>
-                <td class="cm-tp" id="exp-cm-tp">—</td>
+                <th style="width:20px;"></th><th style="width:20px;"></th>
+                <th style="color:var(--muted);font-size:11px;">Aprobado</th>
+                <th style="color:var(--muted);font-size:11px;">Rechazado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td rowspan="2" style="background:none;border:none;padding:0;width:18px;cursor:default;">
+                  <div style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:11px;font-family:var(--mono);color:var(--accent);font-weight:600;letter-spacing:0.1em;text-transform:uppercase;white-space:nowrap;text-align:center;">REAL:</div>
+                </td>
+                <th style="text-align:right;padding:8px 12px;color:var(--muted);font-size:11px;font-weight:500;white-space:nowrap;">Buen pagador</th>
+                <td class="cm-tn" id="exp-cm-tn" onclick="showCmTooltip('tn','exp-cm-tooltip')">—</td>
+                <td class="cm-fp" id="exp-cm-fp" onclick="showCmTooltip('fp','exp-cm-tooltip')">—</td>
+              </tr>
+              <tr>
+                <th style="text-align:right;padding:8px 12px;color:var(--muted);font-size:11px;font-weight:500;white-space:nowrap;">Mal pagador</th>
+                <td class="cm-fn" id="exp-cm-fn" onclick="showCmTooltip('fn','exp-cm-tooltip')">—</td>
+                <td class="cm-tp" id="exp-cm-tp" onclick="showCmTooltip('tp','exp-cm-tooltip')">—</td>
               </tr>
             </tbody>
           </table>
         </div>
+        <div id="exp-cm-tooltip" style="display:none;margin-top:14px;padding:14px 18px;border-radius:8px;font-size:13px;line-height:1.6;border-left:4px solid var(--accent);background:var(--surface2);color:var(--text);"></div>
+        <p style="font-size:11px;color:var(--muted);margin-top:12px;font-family:var(--mono);">Haz clic en cualquier número para ver su interpretación financiera.</p>
       </div>
 
       <!-- Curva ROC real -->
@@ -1125,7 +1166,7 @@
   </div>
 
   <!-- ===== STATS PANEL ===== -->
-  <div class="panel" id="panel-stats">
+  <div class="panel active" id="panel-stats">
 
     <div class="card">
       <div class="card-title">Resumen del dataset</div>
@@ -1310,10 +1351,13 @@
       if (!data.success) throw new Error(data.error);
 
       modelB64 = data.model_b64;
+      // Store probs for threshold slider
+      if (data.probs && data.y_test) {
+        storedProbs = { probs: data.probs, y_test: data.y_test };
+        document.getElementById('threshold-slider').value = 50;
+        document.getElementById('threshold-val').textContent = '50%';
+      }
       const m = data.metrics;
-
-      // Fill metrics
-      document.getElementById('m-accuracy').textContent = (m.accuracy * 100).toFixed(1) + '%';
       document.getElementById('m-auc').textContent = (m.auc_roc * 100).toFixed(1) + '%';
       document.getElementById('m-train').textContent = m.train_samples;
       document.getElementById('m-test').textContent = m.test_samples;
@@ -1897,6 +1941,65 @@
     updatePreviews();
     renderVarChart();
   });
+
+  // ═══════════════════════════════════════════════════════════
+  // CONFUSION MATRIX TOOLTIPS
+  // ═══════════════════════════════════════════════════════════
+
+  const CM_TEXTS = {
+    tn: { icon:'✓', color:'var(--green)', title:'Aprobado correcto (Verdadero Negativo)',
+          text:'El modelo dijo APROBADO y el cliente era realmente un <strong>buen pagador</strong>. Decisión correcta — el banco otorgó el crédito a alguien que sí pagó.' },
+    fp: { icon:'✗', color:'var(--red)', title:'Rechazado incorrecto (Falso Positivo)',
+          text:'El modelo dijo RECHAZADO pero el cliente era realmente un <strong>buen pagador</strong>. Error tipo I — el banco perdió un cliente válido que hubiera pagado su deuda.' },
+    fn: { icon:'⚠️', color:'var(--amber)', title:'Aprobado incorrecto (Falso Negativo) — EL MÁS COSTOSO',
+          text:'El modelo dijo APROBADO pero el cliente era realmente un <strong>mal pagador</strong>. Error tipo II — el banco otorgó crédito a alguien que no pagó, asumiendo una pérdida directa.' },
+    tp: { icon:'✓', color:'var(--green)', title:'Rechazado correcto (Verdadero Positivo)',
+          text:'El modelo dijo RECHAZADO y el cliente era realmente un <strong>mal pagador</strong>. Decisión correcta — el banco evitó otorgar crédito a alguien que no hubiera pagado.' },
+  };
+
+  function showCmTooltip(type, containerId) {
+    const t = CM_TEXTS[type];
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    if (el.style.display === 'block' && el.dataset.type === type) {
+      el.style.display = 'none';
+      return;
+    }
+    el.dataset.type = type;
+    el.style.display = 'block';
+    el.style.borderLeftColor = t.color;
+    el.innerHTML = `<strong style="color:${t.color};font-size:14px;">${t.icon} ${t.title}</strong><br><br>${t.text}`;
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  // THRESHOLD SLIDER
+  // ═══════════════════════════════════════════════════════════
+
+  let storedProbs = null; // stores {probs: [[p0,p1],...], y_test: [...]} after training
+
+  function updateThreshold() {
+    if (!storedProbs) return;
+    const threshold = parseInt(document.getElementById('threshold-slider').value) / 100;
+    const { probs, y_test } = storedProbs;
+    let tn=0, fp=0, fn=0, tp=0;
+    probs.forEach((p, i) => {
+      const pred = p[0] >= threshold ? 0 : 1; // p[0] = prob good risk
+      const real = y_test[i];
+      if (real === 0 && pred === 0) tn++;
+      else if (real === 0 && pred === 1) fp++;
+      else if (real === 1 && pred === 0) fn++;
+      else tp++;
+    });
+    document.getElementById('cm-tn').textContent = tn;
+    document.getElementById('cm-fp').textContent = fp;
+    document.getElementById('cm-fn').textContent = fn;
+    document.getElementById('cm-tp').textContent = tp;
+    const acc = ((tn + tp) / (tn+fp+fn+tp) * 100).toFixed(1);
+    document.getElementById('m-accuracy').textContent = acc + '%';
+    // hide tooltip on change
+    const tt = document.getElementById('cm-tooltip');
+    if (tt) tt.style.display = 'none';
+  }
 </script>
 </body>
 </html>

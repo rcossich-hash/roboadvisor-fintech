@@ -131,6 +131,10 @@ class handler(BaseHTTPRequestHandler):
             clf, X_train, X_test, y_train, y_test = train_model(X, y)
             metrics = compute_metrics(clf, X_test, y_test, X)
 
+            # Store probs for threshold slider
+            probs = clf.predict_proba(X_test).tolist()
+            y_test_list = y_test.tolist()
+
             model_bundle = {
                 "model": clf,
                 "encoders": encoders,
@@ -143,7 +147,9 @@ class handler(BaseHTTPRequestHandler):
             payload = {
                 "success": True,
                 "metrics": metrics,
-                "model_b64": model_b64
+                "model_b64": model_b64,
+                "probs": probs,
+                "y_test": y_test_list
             }
 
             self.send_response(200)
